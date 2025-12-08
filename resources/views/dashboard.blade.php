@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Garuda Fiber</title>
+    <title>HRIS-GFI - Dashboard</title>
     <link rel="icon" type="image/png" href="{{ asset('image/dropcore-icon.png') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -50,71 +50,6 @@
                                 <i class="fas fa-user-tag"></i>
                             </div>
                             <a href="{{ url('role') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-success">
-                            <div class="inner">
-                                <h3>{{ $totalPengguna ?? 0 }}</h3>
-                                <p>Total Pengguna</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-user-friends"></i>
-                            </div>
-                            <a href="{{ url('user') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-info">
-                            <div class="inner">
-                                <h3>{{ $totalProduk ?? 0 }}</h3>
-                                <p>Total Produk</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-boxes"></i>
-                            </div>
-                            <a href="{{ url('product') }}" class="small-box-footer">Selengkapnya <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-success">
-                            <div class="inner">
-                                <h3>{{ $totalStok ?? 0 }}</h3>
-                                <p>Total Stok</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-layer-group"></i>
-                            </div>
-                            <a href="{{ url('stok') }}" class="small-box-footer">Selengkapnya <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-warning">
-                            <div class="inner">
-                                <h3>{{ $totalPenerimaan ?? 0 }}</h3>
-                                <p>Penerimaan Barang</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-truck-loading"></i>
-                            </div>
-                            <a href="{{ url('penerimaan-barang') }}" class="small-box-footer">Selengkapnya <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-danger">
-                            <div class="inner">
-                                <h3>{{ $totalPengeluaran ?? 0 }}</h3>
-                                <p>Pengeluaran Barang</p>
-                            </div>
-                            <div class="icon">
-                                <i class="fas fa-dolly"></i>
-                            </div>
-                            <a href="{{ url('pengeluaran-barang') }}" class="small-box-footer">Selengkapnya <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                 </div>

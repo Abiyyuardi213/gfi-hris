@@ -2,11 +2,11 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Logo -->
     <a href="#" class="brand-link d-flex flex-column align-items-center p-2" style="overflow: hidden;">
-        <img src="{{ asset('image/gfi-putih.png') }}"
+        <img src="{{ asset('image/hris-logo.png') }}"
              alt="Logo Dropcore"
              class="img-fluid d-none d-md-block"
              style="max-height: 40px; object-fit: contain;">
-        <img src="{{ asset('image/gfi-putih.png') }}"
+        <img src="{{ asset('image/hris-logo.png') }}"
              alt="Logo Mini Dropcore"
              class="img-fluid d-block d-md-none"
              style="max-height: 100px; object-fit: contain;">
@@ -17,14 +17,14 @@
         <!-- User Info -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
             <div class="image">
-                <img src="{{ Auth::user()->profile_picture ? asset('uploads/profile/' . Auth::user()->profile_picture) : asset('image/default-user.png') }}"
+                <img src="#"
                     class="img-circle elevation-2"
                     alt="User"
                     style="width: 45px; height: 45px; object-fit: cover; border: 2px solid white;">
             </div>
             <div class="info">
                 <a href="#" class="d-block text-white font-weight-bold">
-                    {{ Auth::user()->name }}
+                    Name
                 </a>
                 <span class="badge badge-success">Online</span>
                 <span class="d-block" style="color: #f39c12; font-size: 14px; font-weight: 600;">
@@ -83,7 +83,7 @@
                         </li>
 
                         <li class="nav-item">
-                            <a href="{{ route('kota.index') }}" class="nav-link text-sm pl-4">
+                            <a href="#" class="nav-link text-sm pl-4">
                                 <i class="nav-icon fas fa-city"></i>
                                 <p>Master Kota</p>
                             </a>

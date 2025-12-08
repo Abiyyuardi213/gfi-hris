@@ -7,7 +7,7 @@
         <!-- Dropdown user dipindah ke kiri -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user-circle"></i> {{ Auth::user()->username }}
+                <i class="fas fa-user-circle"></i> Username
             </a>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
                 <li>
