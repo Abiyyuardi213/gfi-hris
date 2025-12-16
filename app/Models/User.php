@@ -2,47 +2,135 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $table = 'users';
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role_id',
+        'status',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'status' => 'boolean',
+    ];
+
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * ======================
+     * BOOT
+     * ======================
      */
-    protected function casts(): array
+    protected static function booted()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        static::creating(function ($user) {
+            if (!$user->id) {
+                $user->id = (string) Str::uuid();
+            }
+        });
+
+        // static::created(function ($user) {
+        //     RiwayatAktivitasLog::add(
+        //         'users', 'create', "Membuat user {$user->email}",
+        //         optional(Auth::user())->id
+        //     );
+        // });
+
+        // static::updated(function ($user) {
+        //     RiwayatAktivitasLog::add(
+        //         'users', 'update', "Memperbarui user {$user->email}",
+        //         optional(Auth::user())->id
+        //     );
+        // });
+
+        // static::deleted(function ($user) {
+        //     RiwayatAktivitasLog::add(
+        //         'users', 'delete', "Menghapus user {$user->email}",
+        //         optional(Auth::user())->id
+        //     );
+        // });
     }
+
+    /**
+     * ======================
+     * CUSTOM METHODS
+     * ======================
+     */
+
+    public static function createUser($data)
+    {
+        return self::create([
+            'name'     => $data['name'],
+            'email'    => $data['email'],
+            'password' => bcrypt($data['password']),
+            'role_id'  => $data['role_id'],
+            'status'   => $data['status'] ?? true,
+        ]);
+    }
+
+    public function updateUser($data)
+    {
+        $this->update([
+            'name'    => $data['name'] ?? $this->name,
+            'email'   => $data['email'] ?? $this->email,
+            'role_id' => $data['role_id'] ?? $this->role_id,
+            'status'  => $data['status'] ?? $this->status,
+        ]);
+
+        if (!empty($data['password'])) {
+            $this->update([
+                'password' => bcrypt($data['password']),
+            ]);
+        }
+    }
+
+    public function toggleStatus()
+    {
+        $this->status = !$this->status;
+        $this->save();
+
+        // RiwayatAktivitasLog::add(
+        //     'users', 'toggle_status', "Mengubah status user {$this->email}",
+        //     optional(Auth::user())->id
+        // );
+    }
+
+    public function deleteUser()
+    {
+        return $this->delete();
+    }
+
+    /**
+     * ======================
+     * RELATIONS
+     * ======================
+     */
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    // public function pegawai()
+    // {
+    //     return $this->hasOne(Pegawai::class);
+    // }
 }
