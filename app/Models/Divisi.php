@@ -79,6 +79,11 @@ class Divisi extends Model
         ]);
     }
 
+    public function divisiJabatan()
+    {
+        return $this->hasMany(DivisiJabatan::class, 'divisi_id');
+    }
+
     public function toggleStatus()
     {
         $this->status = !$this->status;

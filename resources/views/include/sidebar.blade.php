@@ -96,6 +96,8 @@
                                 request()->is('kantor*') ||
                                 request()->is('divisi*') ||
                                 request()->is('jabatan*') ||
+                                request()->is('divisi-jabatan*') ||
+                                request()->is('status-pegawai*') ||
                                 request()->is('pegawai*');
                 @endphp
 
@@ -135,6 +137,20 @@
                             <a href="{{ url('jabatan') }}" class="nav-link text-sm pl-4">
                                 <i class="nav-icon fas fa-user-tie"></i>
                                 <p>Master Jabatan</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ url('divisi-jabatan') }}" class="nav-link text-sm pl-4">
+                                <i class="nav-icon fas fa-user-tie"></i>
+                                <p>Master Divisi Jabatan</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ url('status-pegawai') }}" class="nav-link text-sm pl-4">
+                                <i class="nav-icon fas fa-id-card"></i>
+                                <p>Master Status Pegawai</p>
                             </a>
                         </li>
 
