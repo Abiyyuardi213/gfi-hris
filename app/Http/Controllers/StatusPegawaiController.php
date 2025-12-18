@@ -22,7 +22,6 @@ class StatusPegawaiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_status' => 'required|string|max:20|unique:status_pegawai,kode_status',
             'nama_status' => 'required|string|max:100',
             'keterangan'  => 'nullable|string',
             'is_aktif'    => 'required|boolean',
@@ -54,7 +53,6 @@ class StatusPegawaiController extends Controller
         $status = StatusPegawai::findOrFail($id);
 
         $request->validate([
-            'kode_status' => 'required|string|max:20|unique:status_pegawai,kode_status,' . $status->id,
             'nama_status' => 'required|string|max:100',
             'keterangan'  => 'nullable|string',
             'is_aktif'    => 'required|boolean',
