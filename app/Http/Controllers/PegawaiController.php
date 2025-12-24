@@ -7,7 +7,12 @@ use App\Models\Kantor;
 use App\Models\Divisi;
 use App\Models\Jabatan;
 use App\Models\StatusPegawai;
+use App\Models\User;
+use App\Models\Role;
+use App\Models\ShiftKerja;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PegawaiController extends Controller
 {
@@ -16,7 +21,7 @@ class PegawaiController extends Controller
      */
     public function index()
     {
-        $pegawais = Pegawai::with(['kantor', 'divisi', 'jabatan', 'statusPegawai'])->latest()->get();
+        $pegawais = Pegawai::with(['kantor', 'divisi', 'jabatan', 'statusPegawai', 'user', 'shiftKerja'])->latest()->get();
         return view('pegawai.index', compact('pegawais'));
     }
 
@@ -29,8 +34,9 @@ class PegawaiController extends Controller
         $divisis = Divisi::all();
         $jabatans = Jabatan::all();
         $statusPegawais = StatusPegawai::all();
+        $shiftKerjas = ShiftKerja::where('status', true)->get();
 
-        return view('pegawai.create', compact('kantors', 'divisis', 'jabatans', 'statusPegawais'));
+        return view('pegawai.create', compact('kantors', 'divisis', 'jabatans', 'statusPegawais', 'shiftKerjas'));
     }
 
     /**
@@ -55,17 +61,50 @@ class PegawaiController extends Controller
             'divisi_id' => 'required|exists:divisi,id',
             'jabatan_id' => 'required|exists:jabatan,id',
             'status_pegawai_id' => 'required|exists:status_pegawai,id',
+            'shift_kerja_id' => 'required|exists:shift_kerja,id',
             'foto' => 'nullable|image|max:2048', // Max 2MB
         ]);
 
-        if ($request->hasFile('foto')) {
-            $path = $request->file('foto')->store('foto-pegawai', 'public');
-            $validated['foto'] = $path;
+        DB::beginTransaction();
+        try {
+            if ($request->hasFile('foto')) {
+                $path = $request->file('foto')->store('foto-pegawai', 'public');
+                $validated['foto'] = $path;
+            }
+
+            // Create User Account
+            // Password default: DDMMYYYY
+            $password = \Carbon\Carbon::parse($request->tanggal_lahir)->format('dmY');
+
+            // Role Pegawai
+            $role = Role::where('role_name', 'Pegawai')->first();
+            if (!$role) {
+                // Fallback or create? Better to fail if role setup is wrong, but let's try 'User'
+                $role = Role::where('role_name', 'User')->first();
+            }
+
+            $email = $request->email_pribadi ?? $request->nik . '@hris.local';
+
+            $user = User::create([
+                'id' => (string) Str::uuid(),
+                'name' => $request->nama_lengkap,
+                'email' => $email,
+                'password' => bcrypt($password),
+                'role_id' => $role ? $role->id : null,
+                'foto' => $validated['foto'] ?? null,
+                'status' => true,
+            ]);
+
+            $validated['user_id'] = $user->id;
+
+            Pegawai::create($validated);
+
+            DB::commit();
+            return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil ditambahkan. Akun login dibuat (Pass: ddmmyyyy).');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage())->withInput();
         }
-
-        Pegawai::create($validated);
-
-        return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil ditambahkan.');
     }
 
     /**
@@ -85,8 +124,9 @@ class PegawaiController extends Controller
         $divisis = Divisi::all();
         $jabatans = Jabatan::all();
         $statusPegawais = StatusPegawai::all();
+        $shiftKerjas = ShiftKerja::where('status', true)->get();
 
-        return view('pegawai.edit', compact('pegawai', 'kantors', 'divisis', 'jabatans', 'statusPegawais'));
+        return view('pegawai.edit', compact('pegawai', 'kantors', 'divisis', 'jabatans', 'statusPegawais', 'shiftKerjas'));
     }
 
     /**
@@ -112,16 +152,18 @@ class PegawaiController extends Controller
             'divisi_id' => 'required|exists:divisi,id',
             'jabatan_id' => 'required|exists:jabatan,id',
             'status_pegawai_id' => 'required|exists:status_pegawai,id',
+            'shift_kerja_id' => 'required|exists:shift_kerja,id',
             'foto' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
-            // Delete old photo if exists? For now just overwrite reference
             $path = $request->file('foto')->store('foto-pegawai', 'public');
             $validated['foto'] = $path;
         }
 
         $pegawai->update($validated);
+
+        // Update User info if relevant (name/email)? For now keep separate.
 
         return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil diperbarui.');
     }
@@ -132,6 +174,11 @@ class PegawaiController extends Controller
     public function destroy(Pegawai $pegawai)
     {
         $pegawai->delete();
+        // Also delete user? Soft delete?
+        if ($pegawai->user) {
+            // Optional: $pegawai->user->delete();
+        }
+
         return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil dihapus.');
     }
 }

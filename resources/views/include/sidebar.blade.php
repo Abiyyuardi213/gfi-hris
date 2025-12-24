@@ -44,122 +44,186 @@
                     </a>
                 </li>
 
-                @php
-                    $isMaster = request()->is('dashboard-master*') || request()->is('role*') || request()->is('user*');
-                @endphp
+                @if (strtolower(Auth::user()->role->role_name) != 'pegawai')
+                    @php
+                        $isMaster =
+                            request()->is('dashboard-master*') || request()->is('role*') || request()->is('user*');
+                    @endphp
 
-                <li class="nav-item has-treeview {{ $isMaster ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $isMaster ? 'active' : '' }} font-weight-bold">
-                        <i class="nav-icon fas fa-folder-open"></i>
-                        <p>
-                            Master Data
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                    <li class="nav-item has-treeview {{ $isMaster ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link {{ $isMaster ? 'active' : '' }} font-weight-bold">
+                            <i class="nav-icon fas fa-folder-open"></i>
+                            <p>
+                                Master Data
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+
+                        <ul class="nav nav-treeview" style="{{ $isMaster ? 'display:block;' : '' }}">
+
+                            <li class="nav-item">
+                                <a href="{{ url('dashboard-master') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-warehouse"></i>
+                                    <p>Dashboard Master</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('role') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-user-shield"></i>
+                                    <p>Master Peran</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('user') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-users-cog"></i>
+                                    <p>Master Pengguna</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="#" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-city"></i>
+                                    <p>Master Kota</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    @php
+                        $isOffice =
+                            request()->is('dashboardOffice*') ||
+                            request()->is('kantor*') ||
+                            request()->is('divisi*') ||
+                            request()->is('jabatan*') ||
+                            request()->is('divisi-jabatan*') ||
+                            request()->is('status-pegawai*') ||
+                            request()->is('pegawai*') ||
+                            request()->is('shift-kerja*') ||
+                            request()->is('hari-libur*');
+                    @endphp
+
+                    <li class="nav-item has-treeview {{ $isOffice ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link {{ $isOffice ? 'active' : '' }} font-weight-bold">
+                            <i class="nav-icon fas fa-building"></i>
+                            <p>
+                                Master Office
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+
+                        <ul class="nav nav-treeview" style="{{ $isOffice ? 'display: block;' : '' }}">
+
+                            <li class="nav-item">
+                                <a href="{{ url('dashboardOffice') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-chart-line"></i>
+                                    <p>Dashboard Office</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('kantor') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-building"></i>
+                                    <p>Master Kantor</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('divisi') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-sitemap"></i>
+                                    <p>Master Divisi</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('jabatan') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-user-tie"></i>
+                                    <p>Master Jabatan</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('divisi-jabatan') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-user-tie"></i>
+                                    <p>Master Divisi Jabatan</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('status-pegawai') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-id-card"></i>
+                                    <p>Master Status Pegawai</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('pegawai') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-id-card"></i>
+                                    <p>Master Pegawai</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('shift-kerja') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-clock"></i>
+                                    <p>Master Shift Kerja</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ url('hari-libur') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-calendar-alt"></i>
+                                    <p>Master Hari Libur</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+
+                {{-- TRANSAKSI / ACTIVITY --}}
+                <li class="nav-header">AKTIVITAS</li>
+
+                <li class="nav-item">
+                    <a href="{{ route('presensi.create') }}"
+                        class="nav-link {{ request()->is('presensi/create') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-fingerprint"></i>
+                        <p>Absensi Harian</p>
                     </a>
-
-                    <ul class="nav nav-treeview" style="{{ $isMaster ? 'display:block;' : '' }}">
-
-                        <li class="nav-item">
-                            <a href="{{ url('dashboard-master') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-warehouse"></i>
-                                <p>Dashboard Master</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ url('role') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-user-shield"></i>
-                                <p>Master Peran</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ url('user') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-users-cog"></i>
-                                <p>Master Pengguna</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-city"></i>
-                                <p>Master Kota</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
-                @php
-                    $isOffice =
-                        request()->is('dashboardOffice*') ||
-                        request()->is('kantor*') ||
-                        request()->is('divisi*') ||
-                        request()->is('jabatan*') ||
-                        request()->is('divisi-jabatan*') ||
-                        request()->is('status-pegawai*') ||
-                        request()->is('pegawai*');
-                @endphp
+                @if (strtolower(Auth::user()->role->role_name) != 'pegawai')
+                    <li class="nav-item">
+                        <a href="{{ route('presensi.index') }}"
+                            class="nav-link {{ request()->is('presensi') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <p>Data Presensi (Log)</p>
+                        </a>
+                    </li>
+                @endif
 
-                <li class="nav-item has-treeview {{ $isOffice ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $isOffice ? 'active' : '' }} font-weight-bold">
-                        <i class="nav-icon fas fa-building"></i>
-                        <p>
-                            Master Office
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                <li class="nav-item">
+                    <a href="{{ route('presensi.summary') }}"
+                        class="nav-link {{ request()->is('presensi/summary') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file-alt"></i>
+                        <p>Rekap Absensi</p>
                     </a>
+                </li>
 
-                    <ul class="nav nav-treeview" style="{{ $isOffice ? 'display: block;' : '' }}">
+                <li class="nav-item">
+                    <a href="{{ route('pengajuan-izin.index') }}"
+                        class="nav-link {{ request()->is('pengajuan-izin*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-envelope-open-text"></i>
+                        <p>Pengajuan Izin/Sakit</p>
+                    </a>
+                </li>
 
-                        <li class="nav-item">
-                            <a href="{{ url('dashboardOffice') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-chart-line"></i>
-                                <p>Dashboard Office</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ url('kantor') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-building"></i>
-                                <p>Master Kantor</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ url('divisi') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-sitemap"></i>
-                                <p>Master Divisi</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ url('jabatan') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-user-tie"></i>
-                                <p>Master Jabatan</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ url('divisi-jabatan') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-user-tie"></i>
-                                <p>Master Divisi Jabatan</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ url('status-pegawai') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-id-card"></i>
-                                <p>Master Status Pegawai</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ url('pegawai') }}" class="nav-link text-sm pl-4">
-                                <i class="nav-icon fas fa-id-card"></i>
-                                <p>Master Pegawai</p>
-                            </a>
-                        </li>
-                    </ul>
+                <li class="nav-item">
+                    <a href="{{ route('lembur.index') }}"
+                        class="nav-link {{ request()->is('lembur*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-clock"></i>
+                        <p>Data Lembur</p>
+                    </a>
                 </li>
             </ul>
         </nav>

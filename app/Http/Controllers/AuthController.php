@@ -20,21 +20,38 @@ class AuthController extends Controller
         ]);
 
         $login = $request->input('login');
-        $loginType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+        $password = $request->input('password');
 
-        $credentials = [
-            $loginType => $login,
-            'password' => $request->input('password'),
-            'status' => true
-        ];
+        $credentials = [];
+
+        if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+            $credentials = ['email' => $login, 'password' => $password, 'status' => true];
+        } else {
+            // Assume NIP, find Pegawai
+            $pegawai = \App\Models\Pegawai::where('nip', $login)->with('user')->first();
+            if ($pegawai && $pegawai->user) {
+                // We use the email of the user associated with this Pegawai
+                $credentials = ['email' => $pegawai->user->email, 'password' => $password, 'status' => true];
+            } else {
+                return back()->withErrors([
+                    'login' => 'NIP tidak ditemukan atau tidak terdaftar sebagai user aktif.',
+                ])->onlyInput('login');
+            }
+        }
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+
+            // Redirect based on role
+            // if (Auth::user()->role->role_name == 'Pegawai') {
+            //    return redirect()->route('dashboard.pegawai');
+            // }
+
             return redirect()->intended('dashboard');
         }
 
         return back()->withErrors([
-            'login' => 'The provided credentials do not match our records.',
+            'login' => 'Login gagal. Periksa kembali NIP/Email dan Password anda.',
         ])->onlyInput('login');
     }
 

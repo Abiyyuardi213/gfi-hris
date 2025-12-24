@@ -166,6 +166,19 @@
                                             </select>
                                         </div>
                                         <div class="form-group">
+                                            <label>Shift Kerja <span class="text-danger">*</span></label>
+                                            <select name="shift_kerja_id" class="form-control" required>
+                                                <option value="">-- Pilih Shift Kerja --</option>
+                                                @foreach ($shiftKerjas as $shift)
+                                                    <option value="{{ $shift->id }}"
+                                                        {{ old('shift_kerja_id', $pegawai->shift_kerja_id) == $shift->id ? 'selected' : '' }}>
+                                                        {{ $shift->nama_shift }} ({{ $shift->jam_masuk }} -
+                                                        {{ $shift->jam_keluar }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
                                             <label>Tanggal Masuk <span class="text-danger">*</span></label>
                                             <input type="date" name="tanggal_masuk" class="form-control" required
                                                 value="{{ old('tanggal_masuk', $pegawai->tanggal_masuk->format('Y-m-d')) }}">
