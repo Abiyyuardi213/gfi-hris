@@ -6,8 +6,10 @@
 
         <!-- Dropdown user dipindah ke kiri -->
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user-circle"></i> Username
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                aria-expanded="false">
+                <i class="fas fa-user-circle"></i> {{ Auth::user()->name }}
+                <small>({{ Auth::user()->role->role_name ?? '-' }})</small>
             </a>
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
                 <li>
@@ -16,11 +18,13 @@
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="{{ url('pengguna/profil') }}">
+                    <a class="dropdown-item" href="{{ route('profile.index') }}">
                         <i class="fas fa-user"></i> Profile
                     </a>
                 </li>
-                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
                 <li>
                     <a class="dropdown-item text-danger" href="#" data-toggle="modal" data-target="#logoutModal">
                         <i class="fas fa-sign-out-alt"></i> Logout

@@ -31,9 +31,16 @@ class UserController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'role_id'  => 'required|exists:role,id',
             'status'   => 'required|boolean',
+            'foto'     => 'nullable|image|max:2048',
         ]);
 
-        User::createUser($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('foto-user', 'public');
+        }
+
+        User::createUser($data);
 
         return redirect()
             ->route('user.index')
@@ -51,9 +58,9 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::with([
-                'role'
-                // 'pegawai'
-            ])
+            'role'
+            // 'pegawai'
+        ])
             ->findOrFail($id);
 
         return view('user.show', compact('user'));
@@ -69,9 +76,16 @@ class UserController extends Controller
             'password' => 'nullable|string|min:6|confirmed',
             'role_id'  => 'required|exists:role,id',
             'status'   => 'required|boolean',
+            'foto'     => 'nullable|image|max:2048',
         ]);
 
-        $user->updateUser($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('foto-user', 'public');
+        }
+
+        $user->updateUser($data);
 
         return redirect()
             ->route('user.index')

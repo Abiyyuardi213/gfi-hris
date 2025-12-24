@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'foto',
         'role_id',
         'status',
     ];
@@ -81,6 +82,7 @@ class User extends Authenticatable
             'name'     => $data['name'],
             'email'    => $data['email'],
             'password' => bcrypt($data['password']),
+            'foto'     => $data['foto'] ?? null,
             'role_id'  => $data['role_id'],
             'status'   => $data['status'] ?? true,
         ]);
@@ -91,6 +93,7 @@ class User extends Authenticatable
         $this->update([
             'name'    => $data['name'] ?? $this->name,
             'email'   => $data['email'] ?? $this->email,
+            'foto'    => $data['foto'] ?? $this->foto,
             'role_id' => $data['role_id'] ?? $this->role_id,
             'status'  => $data['status'] ?? $this->status,
         ]);

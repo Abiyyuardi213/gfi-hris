@@ -10,9 +10,11 @@ class DashboardController extends Controller
     public function index()
     {
         $totalPeran = Role::count();
+        $totalPegawai = \App\Models\Pegawai::count();
 
         return view('dashboard', compact(
             'totalPeran',
+            'totalPegawai'
         ));
     }
 }
