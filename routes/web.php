@@ -17,10 +17,12 @@ use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\PengajuanIzinController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\LemburController;
+use App\Http\Controllers\CutiController;
+use App\Http\Controllers\PayrollController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -39,6 +41,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('pengajuan-izin', [PengajuanIzinController::class, 'index'])->name('pengajuan-izin.index');
     Route::get('lembur', [LemburController::class, 'index'])->name('lembur.index');
     Route::delete('lembur/{id}', [LemburController::class, 'destroy'])->name('lembur.destroy'); // Shared delete (own pending / admin any)
+
+    Route::get('cuti', [CutiController::class, 'index'])->name('cuti.index');
+    Route::delete('cuti/{id}', [CutiController::class, 'destroy'])->name('cuti.destroy');
 
     // === ADMIN ===
     Route::middleware(['role:Super Admin,Admin'])->group(function () {
@@ -83,6 +88,17 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('lembur/{id}/approve', [LemburController::class, 'approve'])->name('lembur.approve');
         Route::post('lembur/{id}/reject', [LemburController::class, 'reject'])->name('lembur.reject');
+
+        Route::post('cuti/{id}/approve', [CutiController::class, 'approve'])->name('cuti.approve');
+        Route::post('cuti/{id}/reject', [CutiController::class, 'reject'])->name('cuti.reject');
+
+        // Payroll (Admin)
+        Route::get('payroll', [PayrollController::class, 'index'])->name('payroll.index');
+        Route::get('payroll/create-period', [PayrollController::class, 'createPeriod'])->name('payroll.create-period');
+        Route::post('payroll/store-period', [PayrollController::class, 'storePeriod'])->name('payroll.store-period');
+        Route::get('payroll/period/{id}', [PayrollController::class, 'showPeriod'])->name('payroll.show-period');
+        Route::post('payroll/period/{id}/generate', [PayrollController::class, 'generate'])->name('payroll.generate');
+        Route::get('payroll/slip/{id}', [PayrollController::class, 'show'])->name('payroll.show'); // Admin can view slip too
     });
 
     // === PEGAWAI ===
@@ -98,5 +114,11 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('lembur/create', [LemburController::class, 'create'])->name('lembur.create');
         Route::post('lembur', [LemburController::class, 'store'])->name('lembur.store');
+
+        Route::get('cuti/create', [CutiController::class, 'create'])->name('cuti.create');
+        Route::post('cuti', [CutiController::class, 'store'])->name('cuti.store');
+
+        Route::get('my-payroll', [PayrollController::class, 'userIndex'])->name('payroll.user-index');
+        Route::get('my-payroll/{id}', [PayrollController::class, 'show'])->name('payroll.user-show');
     });
 });

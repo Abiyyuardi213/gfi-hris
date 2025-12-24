@@ -31,6 +31,7 @@ class JabatanController extends Controller
         $request->validate([
             'divisi_id'    => 'required|exists:divisi,id',
             'nama_jabatan' => 'required|string|max:255',
+            'gaji_per_hari' => 'required|numeric|min:0',
             'deskripsi'    => 'nullable|string',
             'status'       => 'required|boolean',
         ]);
@@ -69,6 +70,7 @@ class JabatanController extends Controller
         $request->validate([
             'divisi_id'    => 'required|exists:divisi,id',
             'nama_jabatan' => 'required|string|max:255',
+            'gaji_per_hari' => 'required|numeric|min:0',
             'deskripsi'    => 'nullable|string',
             'status'       => 'required|boolean',
         ]);

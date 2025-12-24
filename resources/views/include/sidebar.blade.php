@@ -225,6 +225,32 @@
                         <p>Data Lembur</p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('cuti.index') }}"
+                        class="nav-link {{ request()->is('cuti*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-calendar-minus"></i>
+                        <p>Manajemen Cuti</p>
+                    </a>
+                </li>
+
+                @if (in_array(strtolower(Auth::user()->role->role_name), ['super admin', 'admin']))
+                    <li class="nav-item">
+                        <a href="{{ route('payroll.index') }}"
+                            class="nav-link {{ request()->is('payroll') || request()->is('payroll/*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-money-bill-wave"></i>
+                            <p>Payroll / Penggajian</p>
+                        </a>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a href="{{ route('payroll.user-index') }}"
+                            class="nav-link {{ request()->is('my-payroll*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-money-check-alt"></i>
+                            <p>Slip Gaji Saya</p>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </nav>
     </div>

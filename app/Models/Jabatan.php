@@ -16,6 +16,7 @@ class Jabatan extends Model
         'divisi_id',
         'kode_jabatan',
         'nama_jabatan',
+        'gaji_per_hari',
         'deskripsi',
         'status',
     ];
@@ -65,6 +66,7 @@ class Jabatan extends Model
         return self::create([
             'divisi_id'    => $data['divisi_id'],
             'nama_jabatan' => $data['nama_jabatan'],
+            'gaji_per_hari' => $data['gaji_per_hari'],
             'deskripsi'    => $data['deskripsi'] ?? null,
             'status'       => $data['status'] ?? true,
         ]);
@@ -75,6 +77,7 @@ class Jabatan extends Model
         $this->update([
             'divisi_id'    => $data['divisi_id'],
             'nama_jabatan' => $data['nama_jabatan'],
+            'gaji_per_hari' => $data['gaji_per_hari'],
             'deskripsi'    => $data['deskripsi'] ?? $this->deskripsi,
             'status'       => $data['status'] ?? $this->status,
         ]);
