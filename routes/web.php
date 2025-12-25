@@ -20,6 +20,8 @@ use App\Http\Controllers\LemburController;
 use App\Http\Controllers\CutiController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PerjalananDinasController;
+use App\Http\Controllers\MutasiController;
+use App\Http\Controllers\AssetController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -36,6 +38,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Notifications (Shared, Polling)
+    Route::get('notifications/count', [App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('notifications.count');
+    Route::get('notifications/list', [App\Http\Controllers\NotificationController::class, 'getDropdownList'])->name('notifications.list');
+    Route::get('notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/mark-read', [App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
 
     // Shared Features with policy logic inside Controller
     Route::get('presensi/summary', [PresensiController::class, 'summary'])->name('presensi.summary');
@@ -80,6 +88,8 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('kota', KotaController::class);
         Route::resource('pegawai', PegawaiController::class);
+        Route::resource('mutasi', MutasiController::class); // Modul Mutasi & Promosi
+        Route::resource('assets', AssetController::class); // Modul Aset & Inventaris
 
         Route::post('shift-kerja/{id}/toggle-status', [ShiftKerjaController::class, 'toggleStatus'])->name('shift-kerja.toggleStatus');
         Route::resource('shift-kerja', ShiftKerjaController::class);

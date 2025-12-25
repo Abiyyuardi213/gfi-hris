@@ -157,6 +157,13 @@ class PerjalananDinasController extends Controller
             'catatan_persetujuan' => $request->catatan,
         ]);
 
+        // Notify all participants
+        foreach ($perjalanan->peserta as $p) {
+            if ($p->user) {
+                $p->user->notify(new \App\Notifications\PerjalananDinasStatusNotification($status));
+            }
+        }
+
         return redirect()->back()->with('success', "Status berhasil diubah menjadi {$status}.");
     }
 

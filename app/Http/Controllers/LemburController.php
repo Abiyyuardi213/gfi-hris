@@ -89,6 +89,11 @@ class LemburController extends Controller
     {
         $lembur = Lembur::findOrFail($id);
         $lembur->update(['status' => 'Disetujui']);
+
+        if ($lembur->pegawai && $lembur->pegawai->user) {
+            $lembur->pegawai->user->notify(new \App\Notifications\LemburStatusNotification('Disetujui'));
+        }
+
         return redirect()->back()->with('success', 'Lembur disetujui.');
     }
 
@@ -99,6 +104,11 @@ class LemburController extends Controller
             'status' => 'Ditolak',
             'catatan_approval' => $request->catatan_approval // Optional reason
         ]);
+
+        if ($lembur->pegawai && $lembur->pegawai->user) {
+            $lembur->pegawai->user->notify(new \App\Notifications\LemburStatusNotification('Ditolak'));
+        }
+
         return redirect()->back()->with('success', 'Lembur ditolak.');
     }
 

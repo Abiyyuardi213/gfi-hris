@@ -80,6 +80,18 @@
                             <td>Jabatan</td>
                             <td>: {{ $payroll->pegawai->jabatan->nama_jabatan ?? '-' }}</td>
                         </tr>
+                        <tr>
+                            <td>Divisi</td>
+                            <td>: {{ $payroll->pegawai->divisi->nama_divisi ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Kantor</td>
+                            <td>: {{ $payroll->pegawai->kantor->nama_kantor ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>: {{ $payroll->pegawai->statusPegawai->nama_status ?? '-' }}</td>
+                        </tr>
                     </table>
                 </div>
                 <div class="col-6 text-right">

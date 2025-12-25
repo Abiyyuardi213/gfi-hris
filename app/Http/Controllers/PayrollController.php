@@ -183,6 +183,11 @@ class PayrollController extends Controller
                         'jumlah' => $d['amount']
                     ]);
                 }
+
+                // Notify User
+                if ($pegawai->user) {
+                    $pegawai->user->notify(new \App\Notifications\PayrollNotification($period->nama_periode));
+                }
             }
 
             DB::commit();

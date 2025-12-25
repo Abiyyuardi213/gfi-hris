@@ -25,16 +25,6 @@
                             <h1>Detail Periode: {{ $period->nama_periode }}</h1>
                         </div>
                         <div class="col-sm-6 text-right">
-                            @if (!$period->is_closed)
-                                <form action="{{ route('payroll.generate', $period->id) }}" method="POST"
-                                    class="d-inline"
-                                    onsubmit="return confirm('Proses ini akan menghitung ulang gaji semua pegawai di periode ini. Lanjutkan?');">
-                                    @csrf
-                                    <button type="submit" class="btn btn-warning">
-                                        <i class="fas fa-sync"></i> Generate / Hitung Ulang Gaji
-                                    </button>
-                                </form>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -51,6 +41,18 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">Daftar Gaji Pegawai</h3>
+                            <div class="card-tools">
+                                @if (!$period->is_closed)
+                                    <form action="{{ route('payroll.generate', $period->id) }}" method="POST"
+                                        class="d-inline"
+                                        onsubmit="return confirm('Proses ini akan menghitung ulang gaji semua pegawai di periode ini. Lanjutkan?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-sync"></i> Generate / Hitung Ulang Gaji
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
                         <div class="card-body">
                             <table id="payrollDetailTable" class="table table-bordered table-striped">

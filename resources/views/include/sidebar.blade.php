@@ -123,6 +123,13 @@
                             </li>
 
                             <li class="nav-item">
+                                <a href="{{ route('assets.index') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-cubes"></i>
+                                    <p>Manajemen Aset</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a href="{{ url('kantor') }}" class="nav-link text-sm pl-4">
                                     <i class="nav-icon fas fa-building"></i>
                                     <p>Master Kantor</p>
@@ -161,6 +168,13 @@
                                 <a href="{{ url('pegawai') }}" class="nav-link text-sm pl-4">
                                     <i class="nav-icon fas fa-id-card"></i>
                                     <p>Master Pegawai</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('mutasi.index') }}" class="nav-link text-sm pl-4">
+                                    <i class="nav-icon fas fa-exchange-alt"></i>
+                                    <p>Mutasi & Promosi</p>
                                 </a>
                             </li>
 

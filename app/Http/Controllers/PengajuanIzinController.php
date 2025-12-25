@@ -103,6 +103,13 @@ class PengajuanIzinController extends Controller
             $start->addDay();
         }
 
+
+
+        // Send Notification
+        if ($izin->pegawai && $izin->pegawai->user) {
+            $izin->pegawai->user->notify(new \App\Notifications\IzinStatusNotification('Disetujui'));
+        }
+
         return redirect()->back()->with('success', 'Pengajuan disetujui.');
     }
 
