@@ -19,6 +19,7 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\LemburController;
 use App\Http\Controllers\CutiController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\PerjalananDinasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -44,6 +45,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('cuti', [CutiController::class, 'index'])->name('cuti.index');
     Route::delete('cuti/{id}', [CutiController::class, 'destroy'])->name('cuti.destroy');
+
+    // Perjalanan Dinas (Shared)
+    Route::get('perjalanan-dinas', [PerjalananDinasController::class, 'index'])->name('perjalanan-dinas.index');
+    Route::get('perjalanan-dinas/create', [PerjalananDinasController::class, 'create'])->name('perjalanan-dinas.create');
+    Route::post('perjalanan-dinas', [PerjalananDinasController::class, 'store'])->name('perjalanan-dinas.store');
+    Route::get('perjalanan-dinas/{id}', [PerjalananDinasController::class, 'show'])->name('perjalanan-dinas.show');
+    Route::get('perjalanan-dinas/{id}/print', [PerjalananDinasController::class, 'print'])->name('perjalanan-dinas.print');
 
     // === ADMIN ===
     Route::middleware(['role:Super Admin,Admin'])->group(function () {
@@ -99,6 +107,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('payroll/period/{id}', [PayrollController::class, 'showPeriod'])->name('payroll.show-period');
         Route::post('payroll/period/{id}/generate', [PayrollController::class, 'generate'])->name('payroll.generate');
         Route::get('payroll/slip/{id}', [PayrollController::class, 'show'])->name('payroll.show'); // Admin can view slip too
+
+        // Perjalanan Dinas (Admin Approval)
+        Route::post('perjalanan-dinas/{id}/approve', [PerjalananDinasController::class, 'approve'])->name('perjalanan-dinas.approve');
+        Route::post('perjalanan-dinas/{id}/reject', [PerjalananDinasController::class, 'reject'])->name('perjalanan-dinas.reject');
     });
 
     // === PEGAWAI ===

@@ -234,6 +234,14 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('perjalanan-dinas.index') }}"
+                        class="nav-link {{ request()->is('perjalanan-dinas*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-plane"></i>
+                        <p>Perjalanan Dinas</p>
+                    </a>
+                </li>
+
                 @if (in_array(strtolower(Auth::user()->role->role_name), ['super admin', 'admin']))
                     <li class="nav-item">
                         <a href="{{ route('payroll.index') }}"

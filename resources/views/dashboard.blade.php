@@ -50,10 +50,11 @@
             <!-- Main Content -->
             <section class="content">
                 <div class="container-fluid">
+                    <!-- Stat Boxes -->
                     <div class="row">
                         <!-- Card Total Pegawai -->
                         <div class="col-lg-3 col-6">
-                            <div class="small-box bg-success">
+                            <div class="small-box bg-info">
                                 <div class="inner">
                                     <h3>{{ $totalPegawai ?? 0 }}</h3>
                                     <p>Total Pegawai</p>
@@ -67,50 +68,110 @@
                             </div>
                         </div>
 
-                        <!-- Card Total Peran -->
+                        <!-- Card Hadir Hari Ini -->
                         <div class="col-lg-3 col-6">
-                            <div class="small-box bg-info">
+                            <div class="small-box bg-success">
                                 <div class="inner">
-                                    <h3>{{ $totalPeran ?? 0 }}</h3>
-                                    <p>Total Peran</p>
+                                    <h3>{{ $totalHadirToday ?? 0 }}</h3>
+                                    <p>Hadir Hari Ini</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="fas fa-user-tag"></i>
+                                    <i class="fas fa-check-circle"></i>
                                 </div>
-                                <a href="{{ url('role') }}" class="small-box-footer">
-                                    Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+                                <a href="{{ route('presensi.index') }}" class="small-box-footer">
+                                    Lihat Absensi <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
                         </div>
 
-                        <!-- Placeholder for other stats -->
+                        <!-- Card Cuti Pending -->
                         <div class="col-lg-3 col-6">
                             <div class="small-box bg-warning">
                                 <div class="inner">
-                                    <h3>0</h3>
+                                    <h3>{{ $totalCutiPending ?? 0 }}</h3>
                                     <p>Permohonan Cuti</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="fas fa-calendar-minus"></i>
+                                    <i class="fas fa-calendar-alt"></i>
                                 </div>
-                                <a href="#" class="small-box-footer">
+                                <a href="{{ route('cuti.index') }}" class="small-box-footer">
                                     Lihat Detail <i class="fas fa-arrow-circle-right"></i>
                                 </a>
                             </div>
                         </div>
 
+                        <!-- Card Lembur Pending -->
                         <div class="col-lg-3 col-6">
                             <div class="small-box bg-danger">
                                 <div class="inner">
-                                    <h3>0</h3>
-                                    <p>Izin / Sakit</p>
+                                    <h3>{{ $totalLemburPending ?? 0 }}</h3>
+                                    <p>Pengajuan Lembur</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="fas fa-clinic-medical"></i>
+                                    <i class="fas fa-clock"></i>
                                 </div>
-                                <a href="#" class="small-box-footer">
+                                <a href="{{ route('lembur.index') }}" class="small-box-footer">
                                     Lihat Detail <i class="fas fa-arrow-circle-right"></i>
                                 </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- New Employee Table -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header border-transparent">
+                                    <h3 class="card-title">Pegawai Terbaru Ditambahkan</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table m-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>NIP</th>
+                                                    <th>Nama Lengkap</th>
+                                                    <th>Jabatan</th>
+                                                    <th>Bergabung</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse($latestPegawais as $pegawai)
+                                                    <tr>
+                                                        <td><a
+                                                                href="{{ route('pegawai.show', $pegawai->id) }}">{{ $pegawai->nip }}</a>
+                                                        </td>
+                                                        <td>{{ $pegawai->nama_lengkap }}</td>
+                                                        <td>{{ $pegawai->jabatan->nama_jabatan ?? '-' }}</td>
+                                                        <td>
+                                                            <span
+                                                                class="sparkbar text-muted">{{ $pegawai->tanggal_masuk->format('d M Y') }}</span>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="4" class="text-center">Belum ada data pegawai.
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer clearfix">
+                                    <a href="{{ route('pegawai.create') }}"
+                                        class="btn btn-sm btn-info float-left">Tambah Pegawai Baru</a>
+                                    <a href="{{ route('pegawai.index') }}"
+                                        class="btn btn-sm btn-secondary float-right">Lihat Semua Pegawai</a>
+                                </div>
                             </div>
                         </div>
                     </div>

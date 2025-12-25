@@ -59,7 +59,7 @@ class PresensiController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $pegawai = Pegawai::where('user_id', $user->id)->first();
+        $pegawai = Pegawai::where('user_id', $user->id)->with('shiftKerja')->first();
 
         if (!$pegawai) {
             return response()->json(['success' => false, 'message' => 'Pegawai not found.']);
@@ -70,8 +70,9 @@ class PresensiController extends Controller
             'lokasi' => 'required', // Lat,Long
         ]);
 
-        $today = Carbon::now()->format('Y-m-d');
-        $now = Carbon::now();
+        $timezone = 'Asia/Jakarta';
+        $now = Carbon::now($timezone);
+        $today = $now->format('Y-m-d');
 
         // Check if already checked in
         $presensi = Presensi::where('pegawai_id', $pegawai->id)
@@ -93,14 +94,14 @@ class PresensiController extends Controller
         // Calculate Lateness
         $terlambat = 0;
         if ($shift) {
-            $jamMasukShift = Carbon::parse($today . ' ' . $shift->jam_masuk);
+            $jamMasukShift = Carbon::parse($today . ' ' . $shift->jam_masuk, $timezone);
 
             // Debugging / Safety check
             // If checking in before shift starts, it's not late.
             // If checking in after, calculate diff.
 
             if ($now->gt($jamMasukShift)) {
-                $terlambat = $now->diffInMinutes($jamMasukShift);
+                $terlambat = (int) $now->diffInMinutes($jamMasukShift);
             }
         }
 
@@ -109,7 +110,7 @@ class PresensiController extends Controller
         $image = str_replace('data:image/png;base64,', '', $image);
         $image = str_replace('data:image/jpeg;base64,', '', $image);
         $image = str_replace(' ', '+', $image);
-        $imageName = 'presensi/ masuk/' . $pegawai->nip . '-' . $today . '-' . time() . '.png';
+        $imageName = 'presensi/masuk/' . $pegawai->nip . '-' . $today . '-' . time() . '.png';
 
         Storage::disk('public')->put($imageName, base64_decode($image));
 
@@ -154,8 +155,9 @@ class PresensiController extends Controller
             'lokasi' => 'required',
         ]);
 
-        $today = Carbon::now()->format('Y-m-d');
-        $now = Carbon::now();
+        $timezone = 'Asia/Jakarta';
+        $now = Carbon::now($timezone);
+        $today = $now->format('Y-m-d');
 
         $presensi = Presensi::where('pegawai_id', $pegawai->id)
             ->whereDate('tanggal', $today)
@@ -173,7 +175,7 @@ class PresensiController extends Controller
         $pulangCepat = 0;
         $shift = $presensi->shiftKerja; // Use saved shift or current shift
         if ($shift) {
-            $jamPulangShift = Carbon::parse($today . ' ' . $shift->jam_keluar);
+            $jamPulangShift = Carbon::parse($today . ' ' . $shift->jam_keluar, $timezone);
             if ($now->lt($jamPulangShift)) {
                 $pulangCepat = $jamPulangShift->diffInMinutes($now);
             }
@@ -240,13 +242,14 @@ class PresensiController extends Controller
             }
 
             if ($shift) {
+                $timezone = 'Asia/Jakarta';
                 // Assume jam_masuk from input is H:i
                 // And shift jam_masuk is H:i:s or H:i
-                $jamMasukInput = \Carbon\Carbon::parse($presensi->tanggal . ' ' . $request->jam_masuk);
-                $jamMasukShift = \Carbon\Carbon::parse($presensi->tanggal . ' ' . $shift->jam_masuk);
+                $jamMasukInput = \Carbon\Carbon::parse($presensi->tanggal->format('Y-m-d') . ' ' . $request->jam_masuk, $timezone);
+                $jamMasukShift = \Carbon\Carbon::parse($presensi->tanggal->format('Y-m-d') . ' ' . $shift->jam_masuk, $timezone);
 
                 if ($jamMasukInput->gt($jamMasukShift)) {
-                    $data['terlambat'] = $jamMasukInput->diffInMinutes($jamMasukShift);
+                    $data['terlambat'] = (int) $jamMasukInput->diffInMinutes($jamMasukShift);
                 } else {
                     $data['terlambat'] = 0;
                 }

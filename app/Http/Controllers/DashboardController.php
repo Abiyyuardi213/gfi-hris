@@ -43,9 +43,26 @@ class DashboardController extends Controller
         $totalPeran = Role::count();
         $totalPegawai = \App\Models\Pegawai::count();
 
+        // Stats Tambahan
+        $currentDate = \Carbon\Carbon::now()->format('Y-m-d');
+        $totalHadirToday = \App\Models\Presensi::whereDate('tanggal', $currentDate)->where('status', 'Hadir')->count();
+
+        $totalCutiPending = \App\Models\Cuti::where('status', 'Menunggu')->count();
+        $totalLemburPending = \App\Models\Lembur::where('status', 'Menunggu')->count();
+
+        // Pegawai Terbaru
+        $latestPegawais = \App\Models\Pegawai::with('jabatan')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         return view('dashboard', compact(
             'totalPeran',
-            'totalPegawai'
+            'totalPegawai',
+            'totalHadirToday',
+            'totalCutiPending',
+            'totalLemburPending',
+            'latestPegawais'
         ));
     }
 }
