@@ -8,6 +8,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;

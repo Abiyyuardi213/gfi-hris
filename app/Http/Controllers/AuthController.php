@@ -24,29 +24,42 @@ class AuthController extends Controller
 
         $credentials = [];
 
+        // Check manually to handle Status messages
         if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
-            $credentials = ['email' => $login, 'password' => $password, 'status' => true];
+            $attemptCreds = ['email' => $login, 'password' => $password]; // Don't check status yet
         } else {
-            // Assume NIP, find Pegawai
+            // ... NIP logic ...
             $pegawai = \App\Models\Pegawai::where('nip', $login)->with('user')->first();
             if ($pegawai && $pegawai->user) {
-                // We use the email of the user associated with this Pegawai
-                $credentials = ['email' => $pegawai->user->email, 'password' => $password, 'status' => true];
+                $attemptCreds = ['email' => $pegawai->user->email, 'password' => $password];
             } else {
-                return back()->withErrors([
-                    'login' => 'NIP tidak ditemukan atau tidak terdaftar sebagai user aktif.',
-                ])->onlyInput('login');
+                return back()->with('error', 'NIP tidak ditemukan.');
             }
         }
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($attemptCreds)) {
+            $user = Auth::user();
+
+            // 1. Check Role: Kandidat
+            if ($user->role && $user->role->role_name == 'Kandidat') {
+                // 2. Check Verification (Email) - handled by EnsureEmailIsVerified middleware usually, but let's check basic
+                // 3. Check Status (Admin Approval)
+                if ($user->status == false) {
+                    Auth::logout();
+                    return back()->with('error', 'Akun Anda sedang menunggu persetujuan Admin.');
+                }
+
+                $request->session()->regenerate();
+                return redirect()->route('recruitment.dashboard');
+            }
+
+            // Standard User Check Status
+            if ($user->status == false) {
+                Auth::logout();
+                return back()->with('error', 'Akun Non-Aktif.');
+            }
+
             $request->session()->regenerate();
-
-            // Redirect based on role
-            // if (Auth::user()->role->role_name == 'Pegawai') {
-            //    return redirect()->route('dashboard.pegawai');
-            // }
-
             return redirect()->intended('dashboard');
         }
 

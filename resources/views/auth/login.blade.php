@@ -101,6 +101,10 @@
     </div>
     </form>
 
+    <div class="mt-3 text-center">
+        <a href="{{ route('recruitment.register') }}" class="text-center">Daftar Karir / Lowongan</a>
+    </div>
+
     </div>
     </div>
 

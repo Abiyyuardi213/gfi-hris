@@ -264,6 +264,22 @@
                             <p>Payroll / Penggajian</p>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('recruitment.admin.index') }}"
+                            class="nav-link {{ request()->is('recruitment/candidates*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user-plus"></i>
+                            <p>Rekrutmen (Pelamar)</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('lowongan.index') }}"
+                            class="nav-link {{ request()->is('lowongan*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-briefcase"></i>
+                            <p>Manajemen Lowongan</p>
+                        </a>
+                    </li>
                 @else
                     <li class="nav-item">
                         <a href="{{ route('payroll.user-index') }}"

@@ -144,3 +144,42 @@ Route::middleware(['auth'])->group(function () {
         Route::get('my-payroll/{id}', [PayrollController::class, 'show'])->name('payroll.user-show');
     });
 });
+
+// === RECRUITMENT AUTH (Public) ===
+Route::get('register-career', [App\Http\Controllers\RecruitmentAuthController::class, 'showRegister'])->name('recruitment.register');
+Route::post('register-career', [App\Http\Controllers\RecruitmentAuthController::class, 'register'])->name('recruitment.register.post');
+Route::get('career/login', [App\Http\Controllers\RecruitmentAuthController::class, 'showLogin'])->name('recruitment.login');
+Route::post('career/login', [App\Http\Controllers\RecruitmentAuthController::class, 'login'])->name('recruitment.login.post');
+
+// === RECRUITMENT AUTHENTICATED ===
+Route::middleware(['auth'])->group(function () {
+    // CANDIDATE
+    // Route::middleware(['role:Kandidat'])->group(function() { // Or check inside controller
+    Route::get('career/dashboard', [App\Http\Controllers\RecruitmentAuthController::class, 'dashboard'])->name('recruitment.dashboard');
+
+    Route::get('career/profile', [App\Http\Controllers\RecruitmentAuthController::class, 'showProfile'])->name('recruitment.profile');
+    Route::post('career/profile/update', [App\Http\Controllers\RecruitmentAuthController::class, 'updateProfile'])->name('recruitment.profile.update');
+
+    Route::get('career/vacancies', [App\Http\Controllers\RecruitmentAuthController::class, 'vacancyList'])->name('recruitment.vacancy.list');
+    Route::get('career/vacancies/{id}', [App\Http\Controllers\RecruitmentAuthController::class, 'showVacancy'])->name('recruitment.vacancy.show');
+    Route::post('career/vacancies/{id}/apply', [App\Http\Controllers\RecruitmentAuthController::class, 'applyVacancy'])->name('recruitment.vacancy.apply');
+    // });
+
+    // ADMIN
+    Route::middleware(['role:Super Admin,Admin'])->group(function () {
+        Route::get('recruitment/candidates', [App\Http\Controllers\RecruitmentAdminController::class, 'index'])->name('recruitment.admin.index');
+        Route::post('recruitment/candidates/{id}/approve', [App\Http\Controllers\RecruitmentAdminController::class, 'approve'])->name('recruitment.admin.approve');
+        Route::post('recruitment/candidates/{id}/reject', [App\Http\Controllers\RecruitmentAdminController::class, 'reject'])->name('recruitment.admin.reject');
+
+        // Lowongan
+        Route::resource('lowongan', App\Http\Controllers\LowonganController::class);
+        Route::post('lowongan/{id}/toggle-status', [App\Http\Controllers\LowonganController::class, 'toggleStatus'])->name('lowongan.toggleStatus');
+    });
+});
+
+// === EMAIL VERIFICATION ROUTES ===
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [App\Http\Controllers\VerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [App\Http\Controllers\VerificationController::class, 'verify'])->middleware(['signed'])->name('verification.verify');
+    Route::post('/email/verification-notification', [App\Http\Controllers\VerificationController::class, 'resend'])->middleware(['throttle:6,1'])->name('verification.send');
+});
