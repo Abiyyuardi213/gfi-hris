@@ -120,9 +120,30 @@ class RecruitmentAuthController extends Controller
     {
         $user = Auth::user();
         $kandidat = Kandidat::where('user_id', $user->id)->first();
+
+        if (!$kandidat) {
+            $kandidat = Kandidat::create([
+                'user_id' => $user->id,
+                'status_lamaran' => 'Baru'
+            ]);
+        }
+
         // Check recent applications
-        $lamarans = \App\Models\Lamaran::where('kandidat_id', $kandidat->id)->with('lowongan')->latest()->get();
+        $lamarans = \App\Models\Lamaran::where('kandidat_id', $kandidat->id)->with(['lowongan', 'wawancaras'])->latest()->get();
         return view('recruitment.dashboard', compact('user', 'kandidat', 'lamarans'));
+    }
+
+    public function showApplicationDetail($id)
+    {
+        $user = Auth::user();
+        $kandidat = Kandidat::where('user_id', $user->id)->firstOrFail();
+
+        $lamaran = \App\Models\Lamaran::where('id', $id)
+            ->where('kandidat_id', $kandidat->id)
+            ->with(['lowongan', 'wawancaras'])
+            ->firstOrFail();
+
+        return view('recruitment.application.detail', compact('lamaran'));
     }
 
     public function showProfile()
@@ -197,6 +218,7 @@ class RecruitmentAuthController extends Controller
             'no_hp' => 'required',
             'alamat' => 'required|string',
             'pendidikan_terakhir' => 'required|string',
+            'jenis_kelamin' => 'required|in:L,P',
             'tempat_lahir' => 'nullable|string',
             'tanggal_lahir' => 'nullable|date',
             'foto' => 'nullable|image|max:2048',
@@ -219,6 +241,7 @@ class RecruitmentAuthController extends Controller
                 'no_hp' => $request->no_hp,
                 'alamat' => $request->alamat,
                 'pendidikan_terakhir' => $request->pendidikan_terakhir,
+                'jenis_kelamin' => $request->jenis_kelamin,
                 'tempat_lahir' => $request->tempat_lahir,
                 'tanggal_lahir' => $request->tanggal_lahir,
             ];

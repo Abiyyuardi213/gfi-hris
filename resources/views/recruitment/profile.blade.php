@@ -123,7 +123,7 @@
                                                 </div>
 
                                                 <div class="row">
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-4">
                                                         <div class="form-group">
                                                             <label>Tempat Lahir</label>
                                                             <input type="text" name="tempat_lahir"
@@ -131,12 +131,26 @@
                                                                 value="{{ old('tempat_lahir', $kandidat->tempat_lahir ?? '') }}">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-4">
                                                         <div class="form-group">
                                                             <label>Tanggal Lahir</label>
                                                             <input type="date" name="tanggal_lahir"
                                                                 class="form-control"
                                                                 value="{{ old('tanggal_lahir', $kandidat->tanggal_lahir ?? '') }}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label>Jenis Kelamin</label>
+                                                            <select name="jenis_kelamin" class="form-control">
+                                                                <option value="">-- Pilih --</option>
+                                                                <option value="L"
+                                                                    {{ old('jenis_kelamin', $kandidat->jenis_kelamin ?? '') == 'L' ? 'selected' : '' }}>
+                                                                    Laki-laki</option>
+                                                                <option value="P"
+                                                                    {{ old('jenis_kelamin', $kandidat->jenis_kelamin ?? '') == 'P' ? 'selected' : '' }}>
+                                                                    Perempuan</option>
+                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>

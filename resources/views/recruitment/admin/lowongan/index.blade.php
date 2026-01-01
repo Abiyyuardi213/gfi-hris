@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap"
+        rel="stylesheet">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -75,6 +77,10 @@
                                                 @endif
                                             </td>
                                             <td>
+                                                <a href="{{ route('lowongan.show', $l->id) }}"
+                                                    class="btn btn-secondary btn-sm" title="Lihat Pelamar">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
                                                 <a href="{{ route('lowongan.edit', $l->id) }}"
                                                     class="btn btn-info btn-sm">
                                                     <i class="fas fa-edit"></i>

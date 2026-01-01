@@ -47,6 +47,7 @@ class LowonganController extends Controller
      */
     public function show(Lowongan $lowongan)
     {
+        $lowongan->load(['lamarans.kandidat.user']);
         return view('recruitment.admin.lowongan.show', compact('lowongan'));
     }
 

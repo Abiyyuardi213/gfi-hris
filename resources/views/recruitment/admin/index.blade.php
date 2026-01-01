@@ -125,6 +125,9 @@
                                                     <button class="btn btn-sm btn-secondary" disabled>Sudah
                                                         Disetujui</button>
                                                 @endif
+                                                <a href="{{ route('recruitment.admin.show', $k->id) }}"
+                                                    class="btn btn-sm btn-info" title="Lihat Detail"><i
+                                                        class="fas fa-eye"></i></a>
                                             </td>
                                         </tr>
                                     @empty

@@ -41,4 +41,9 @@ class Lamaran extends Model
     {
         return $this->belongsTo(Kandidat::class, 'kandidat_id');
     }
+
+    public function wawancaras()
+    {
+        return $this->hasMany(Wawancara::class, 'lamaran_id');
+    }
 }

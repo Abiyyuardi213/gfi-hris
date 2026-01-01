@@ -163,17 +163,24 @@ Route::middleware(['auth'])->group(function () {
     Route::get('career/vacancies', [App\Http\Controllers\RecruitmentAuthController::class, 'vacancyList'])->name('recruitment.vacancy.list');
     Route::get('career/vacancies/{id}', [App\Http\Controllers\RecruitmentAuthController::class, 'showVacancy'])->name('recruitment.vacancy.show');
     Route::post('career/vacancies/{id}/apply', [App\Http\Controllers\RecruitmentAuthController::class, 'applyVacancy'])->name('recruitment.vacancy.apply');
+    Route::get('my-application/{id}', [App\Http\Controllers\RecruitmentAuthController::class, 'showApplicationDetail'])->name('recruitment.application.detail');
     // });
 
     // ADMIN
     Route::middleware(['role:Super Admin,Admin'])->group(function () {
         Route::get('recruitment/candidates', [App\Http\Controllers\RecruitmentAdminController::class, 'index'])->name('recruitment.admin.index');
+        Route::get('recruitment/candidates/{id}', [App\Http\Controllers\RecruitmentAdminController::class, 'show'])->name('recruitment.admin.show');
         Route::post('recruitment/candidates/{id}/approve', [App\Http\Controllers\RecruitmentAdminController::class, 'approve'])->name('recruitment.admin.approve');
         Route::post('recruitment/candidates/{id}/reject', [App\Http\Controllers\RecruitmentAdminController::class, 'reject'])->name('recruitment.admin.reject');
 
         // Lowongan
         Route::resource('lowongan', App\Http\Controllers\LowonganController::class);
         Route::post('lowongan/{id}/toggle-status', [App\Http\Controllers\LowonganController::class, 'toggleStatus'])->name('lowongan.toggleStatus');
+
+        // Application Process (Lamaran)
+        Route::get('recruitment/application/{id}', [App\Http\Controllers\RecruitmentProcessController::class, 'show'])->name('recruitment.application.show');
+        Route::post('recruitment/application/{id}/status', [App\Http\Controllers\RecruitmentProcessController::class, 'updateStatus'])->name('recruitment.application.updateStatus');
+        Route::post('recruitment/application/{id}/schedule', [App\Http\Controllers\RecruitmentProcessController::class, 'scheduleInterview'])->name('recruitment.application.schedule');
     });
 });
 

@@ -7,6 +7,7 @@
     <title>{{ $lowongan->judul }} - GFI Career</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 
 <body class="hold-transition layout-top-nav">
@@ -72,11 +73,13 @@
                                     <i class="fas fa-check-circle"></i> Anda sudah melamar posisi ini.
                                 </div>
                             @else
-                                <form action="{{ route('recruitment.vacancy.apply', $lowongan->id) }}" method="POST">
+                                <form id="applyForm" action="{{ route('recruitment.vacancy.apply', $lowongan->id) }}"
+                                    method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-primary btn-lg btn-block"
-                                        onclick="return confirm('Apakah Anda yakin ingin melamar posisi ini? Pastikan profil dan CV Anda sudah uptodate.')">Lamar
-                                        Sekarang</button>
+                                    <button type="button" class="btn btn-primary btn-lg btn-block shadow-sm"
+                                        onclick="confirmApply()">
+                                        <i class="fas fa-paper-plane mr-2"></i> Lamar Sekarang
+                                    </button>
                                 </form>
                                 <p class="text-muted text-center mt-2"><small>Pastikan data profil dan CV Anda sudah
                                         lengkap sebelum melamar.</small></p>
@@ -121,6 +124,35 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmApply() {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Pastikan profil dan CV Anda sudah uptodate sebelum melamar posisis ini.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#007bff',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Lamar Sekarang!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Optional: Show loading state
+                    Swal.fire({
+                        title: 'Memproses...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading()
+                        }
+                    });
+                    document.getElementById('applyForm').submit();
+                }
+            })
+        }
+    </script>
 </body>
 
 </html>
