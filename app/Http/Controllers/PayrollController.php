@@ -48,7 +48,6 @@ class PayrollController extends Controller
         return view('payroll.show-period', compact('period'));
     }
 
-    // === GENERATE ===
     public function generate(Request $request, $id)
     {
         $period = PayrollPeriod::findOrFail($id);
@@ -57,24 +56,15 @@ class PayrollController extends Controller
             return redirect()->back()->with('error', 'Periode ini sudah ditutup.');
         }
 
-        // Get Active Pegawais
         $pegawais = Pegawai::where('status_pegawai_id', '!=', null)->with('jabatan')->get(); // Assume active check
 
         DB::beginTransaction();
         try {
-            // Delete existing draft payrolls for this period to allow re-generate
-            // Or only create missing? Re-generate is checking consistency.
-            // Let's delete previous calculations for this period (full reset for the period)
             Payroll::where('payroll_period_id', $id)->delete();
-            // Note: details cascade delete usually, but SoftDeletes on Payroll means we might need to force delete or handle details.
-            // Eloquent delete() on HasMany doesn't always cascade soft deletes unless setup.
-            // But let's assume simple logic: create new records.
 
             foreach ($pegawais as $pegawai) {
-                // 1. Basic Info
                 $gajiPerHari = $pegawai->jabatan ? $pegawai->jabatan->gaji_per_hari : 0;
 
-                // 2. Attendance
                 $presensis = Presensi::where('pegawai_id', $pegawai->id)
                     ->whereBetween('tanggal', [$period->start_date, $period->end_date])
                     ->get();
@@ -84,7 +74,6 @@ class PayrollController extends Controller
 
                 $gajiPokok = $gajiPerHari * $totalHadir;
 
-                // 3. Lembur
                 $lemburs = Lembur::where('pegawai_id', $pegawai->id)
                     ->where('status', 'Disetujui')
                     ->whereBetween('tanggal', [$period->start_date, $period->end_date])
@@ -98,18 +87,12 @@ class PayrollController extends Controller
                     }
                 }
 
-                // Rate Lembur: (GajiPerHari / 7) * 1.5 approx? Or fixed.
-                // Let's use standard Depnaker approx: 1/173 * Gaji Sebulan (assuming 22 days?)
-                // If GajiPerHari is the basis, GajiSebulan approx 22 * GajiPerHari?
-                // Simple version: Hourly = GajiPerHari / 8. Rate = 1.5 * Hourly.
                 $hourlyRate = $gajiPerHari > 0 ? ($gajiPerHari / 8) : 0;
                 $upahLembur = $totalJamLembur * $hourlyRate * 1.5;
 
-                // 4. Calculations
                 $allowances = [];
                 $deductions = [];
 
-                // Add Lembur to Allowances
                 if ($upahLembur > 0) {
                     $allowances[] = [
                         'name' => 'Lembur (' . $totalJamLembur . ' Jam)',
@@ -117,13 +100,6 @@ class PayrollController extends Controller
                     ];
                 }
 
-                // Add Uang Makan (Example: included in basic or extra? User said "bisa ditarik dari shift".
-                // If we assume GajiPerHari INCLUDES Uang Makan, we don't add it.
-                // If separate, we need specific value.
-                // Let's assume GajiPerHari is "All in" for daily attendance.
-
-                // Deductions
-                // BPJS (Example 2% of Gaji Pokok)
                 $bpjs = $gajiPokok * 0.02;
                 if ($bpjs > 0) {
                     $deductions[] = [

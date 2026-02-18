@@ -58,8 +58,9 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::with([
-            'role'
-            // 'pegawai'
+            'role',
+            'pegawai',
+            'kandidat'
         ])
             ->findOrFail($id);
 

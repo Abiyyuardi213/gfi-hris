@@ -3,26 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kantor;
+use App\Models\Kota;
 use Illuminate\Http\Request;
 
 class KantorController extends Controller
 {
     public function index()
     {
-        $kantors = Kantor::orderBy('created_at', 'asc')->get();
+        $kantors = Kantor::with('kota')->orderBy('created_at', 'asc')->get();
         return view('kantor.index', compact('kantors'));
     }
 
     public function create()
     {
-        return view('kantor.create');
+        $kotas = Kota::all();
+        return view('kantor.create', compact('kotas'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'nama_kantor' => 'required|string|max:255',
+            'tipe_kantor' => 'required|in:Pusat,Cabang',
+            'no_telp'     => 'nullable|string',
+            'email'       => 'nullable|email',
+            'kota_id'     => 'nullable|exists:kota,id',
             'alamat'      => 'nullable|string',
+            'latitude'    => 'nullable|numeric',
+            'longitude'   => 'nullable|numeric',
+            'radius'      => 'required|integer|min:10',
             'status'      => 'required|boolean',
         ]);
 
@@ -35,14 +44,15 @@ class KantorController extends Controller
 
     public function show($id)
     {
-        $kantor = Kantor::findOrFail($id);
+        $kantor = Kantor::with('kota')->findOrFail($id);
         return view('kantor.show', compact('kantor'));
     }
 
     public function edit($id)
     {
         $kantor = Kantor::findOrFail($id);
-        return view('kantor.edit', compact('kantor'));
+        $kotas = Kota::all();
+        return view('kantor.edit', compact('kantor', 'kotas'));
     }
 
     public function update(Request $request, $id)
@@ -51,7 +61,14 @@ class KantorController extends Controller
 
         $request->validate([
             'nama_kantor' => 'required|string|max:255',
+            'tipe_kantor' => 'required|in:Pusat,Cabang',
+            'no_telp'     => 'nullable|string',
+            'email'       => 'nullable|email',
+            'kota_id'     => 'nullable|exists:kota,id',
             'alamat'      => 'nullable|string',
+            'latitude'    => 'nullable|numeric',
+            'longitude'   => 'nullable|numeric',
+            'radius'      => 'required|integer|min:10',
             'status'      => 'required|boolean',
         ]);
 
@@ -65,7 +82,7 @@ class KantorController extends Controller
     public function destroy($id)
     {
         $kantor = Kantor::findOrFail($id);
-        $kantor->deleteKantor();
+        $kantor->delete(); // Changed from deleteKantor() as standard delete is available
 
         return redirect()
             ->route('kantor.index')

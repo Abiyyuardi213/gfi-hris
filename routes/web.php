@@ -61,8 +61,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('perjalanan-dinas/{id}', [PerjalananDinasController::class, 'show'])->name('perjalanan-dinas.show');
     Route::get('perjalanan-dinas/{id}/print', [PerjalananDinasController::class, 'print'])->name('perjalanan-dinas.print');
 
-    // === ADMIN ===
     Route::middleware(['role:Super Admin,Admin'])->group(function () {
+
+        // Master Dashboard
+        Route::get('master-data', [App\Http\Controllers\MasterDashboardController::class, 'index'])->name('master.dashboard');
+
+        // Master Office Dashboard
+        Route::get('dashboardOffice', [App\Http\Controllers\MasterOfficeDashboardController::class, 'index'])->name('master.office.dashboard');
 
         // Masters
         Route::post('role/{id}/toggle-status', [RoleController::class, 'toggleStatus'])->name('role.toggleStatus');

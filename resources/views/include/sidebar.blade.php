@@ -62,7 +62,7 @@
                         <ul class="nav nav-treeview" style="{{ $isMaster ? 'display:block;' : '' }}">
 
                             <li class="nav-item">
-                                <a href="{{ url('dashboard-master') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('master.dashboard') }}" class="nav-link text-sm pl-4">
                                     <i class="nav-icon fas fa-warehouse"></i>
                                     <p>Dashboard Master</p>
                                 </a>
@@ -116,7 +116,7 @@
                         <ul class="nav nav-treeview" style="{{ $isOffice ? 'display: block;' : '' }}">
 
                             <li class="nav-item">
-                                <a href="{{ url('dashboardOffice') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('master.office.dashboard') }}" class="nav-link text-sm pl-4">
                                     <i class="nav-icon fas fa-chart-line"></i>
                                     <p>Dashboard Office</p>
                                 </a>

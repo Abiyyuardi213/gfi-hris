@@ -14,8 +14,22 @@ class Kantor extends Model
 
     protected $fillable = [
         'nama_kantor',
+        'tipe_kantor',
+        'no_telp',
+        'email',
+        'kota_id',
         'alamat',
+        'latitude',
+        'longitude',
+        'radius',
         'status',
+    ];
+
+    protected $casts = [
+        'status' => 'boolean',
+        'latitude' => 'double',
+        'longitude' => 'double',
+        'radius' => 'integer',
     ];
 
     protected static function booted()
@@ -56,7 +70,14 @@ class Kantor extends Model
     {
         return self::create([
             'nama_kantor' => $data['nama_kantor'],
+            'tipe_kantor' => $data['tipe_kantor'] ?? 'Cabang',
+            'no_telp'     => $data['no_telp'] ?? null,
+            'email'       => $data['email'] ?? null,
+            'kota_id'     => $data['kota_id'] ?? null,
             'alamat'      => $data['alamat'] ?? null,
+            'latitude'    => $data['latitude'] ?? null,
+            'longitude'   => $data['longitude'] ?? null,
+            'radius'      => $data['radius'] ?? 100,
             'status'      => $data['status'] ?? true,
         ]);
     }
@@ -65,7 +86,14 @@ class Kantor extends Model
     {
         $this->update([
             'nama_kantor' => $data['nama_kantor'],
+            'tipe_kantor' => $data['tipe_kantor'] ?? $this->tipe_kantor,
+            'no_telp'     => $data['no_telp'] ?? $this->no_telp,
+            'email'       => $data['email'] ?? $this->email,
+            'kota_id'     => $data['kota_id'] ?? $this->kota_id,
             'alamat'      => $data['alamat'] ?? $this->alamat,
+            'latitude'    => $data['latitude'] ?? $this->latitude,
+            'longitude'   => $data['longitude'] ?? $this->longitude,
+            'radius'      => $data['radius'] ?? $this->radius,
             'status'      => $data['status'] ?? $this->status,
         ]);
     }
@@ -74,5 +102,11 @@ class Kantor extends Model
     {
         $this->status = !$this->status;
         $this->save();
+    }
+
+    // Relations
+    public function kota()
+    {
+        return $this->belongsTo(Kota::class, 'kota_id');
     }
 }
