@@ -1,19 +1,37 @@
-<!-- Toast Container di bawah navbar -->
-<div aria-live="polite" aria-atomic="true" style="position: fixed; top: 60px; right: 10px; z-index: 1100; pointer-events: none;">
-    <div id="toastNotification" class="toast bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false" data-delay="3000" style="pointer-events: auto; width: 350px; max-width: none;">
-        <div class="toast-header bg-success text-white">
-            <i class="fas fa-check-circle mr-2"></i>
-            <strong class="mr-auto">Notifikasi</strong>
-            <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="toast-body">
-            @if (session('success'))
-                {{ session('success') }}
-            @elseif (session('error'))
-                {{ session('error') }}
-            @endif
-        </div>
-    </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{!! session('success') !!}",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: "{!! session('error') !!}",
+                showConfirmButton: true
+            });
+        @endif
+
+        @if (session('warning'))
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan!',
+                text: "{!! session('warning') !!}",
+                showConfirmButton: true
+            });
+        @endif
+    });
+</script>
+
+<!-- Dummy element untuk mencegah error JS pada file yang masih memanggil $('#toastNotification').toast('show') -->
+<div id="toastNotification" class="toast" style="display:none;"></div>
+<div id="toast-body" style="display:none;"></div>
