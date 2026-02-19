@@ -24,6 +24,10 @@
             transform: translateY(-5px);
         }
     </style>
+
+    <!-- Preload Sidebar Images to reduce flickering -->
+    <link rel="preload" as="image" href="{{ asset('image/hris-logo.png') }}">
+    <link rel="preload" as="image" href="{{ asset('image/default-user.png') }}">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -182,18 +186,17 @@
         @include('include.footerSistem')
     </div>
 
-    @include('services.ToastModal')
-    @include('services.LogoutModal')
-
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+    @include('services.ToastModal')
+    @include('services.LogoutModal')
+
     <script>
         $(document).ready(function() {
-            @if (session('success') || session('error'))
-                $('#toastNotification').toast('show');
-            @endif
+            // Toast handled by ToastModal (SweetAlert)
         });
     </script>
 </body>

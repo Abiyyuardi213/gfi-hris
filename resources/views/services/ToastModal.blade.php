@@ -1,32 +1,36 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
         @if (session('success'))
-            Swal.fire({
+            Toast.fire({
                 icon: 'success',
-                title: 'Berhasil!',
-                text: "{!! session('success') !!}",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
+                title: "{!! session('success') !!}"
             });
         @endif
 
         @if (session('error'))
-            Swal.fire({
+            Toast.fire({
                 icon: 'error',
-                title: 'Gagal!',
-                text: "{!! session('error') !!}",
-                showConfirmButton: true
+                title: "{!! session('error') !!}"
             });
         @endif
 
         @if (session('warning'))
-            Swal.fire({
+            Toast.fire({
                 icon: 'warning',
-                title: 'Peringatan!',
-                text: "{!! session('warning') !!}",
-                showConfirmButton: true
+                title: "{!! session('warning') !!}"
             });
         @endif
     });

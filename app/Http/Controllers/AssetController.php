@@ -25,7 +25,22 @@ class AssetController extends Controller
     public function create()
     {
         $pegawais = Pegawai::orderBy('nama_lengkap')->get();
-        return view('assets.create', compact('pegawais'));
+        // Generate Auto Code: INV/YYYY/00X
+        $year = date('Y');
+        $lastAsset = Asset::where('kode_aset', 'like', 'INV/' . $year . '/%')
+            ->orderBy('kode_aset', 'desc')
+            ->first();
+
+        if ($lastAsset) {
+            $lastNumber = (int) substr($lastAsset->kode_aset, -3);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+
+        $kode_aset = 'INV/' . $year . '/' . sprintf('%03d', $newNumber);
+
+        return view('assets.create', compact('pegawais', 'kode_aset'));
     }
 
     /**

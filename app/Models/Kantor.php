@@ -19,17 +19,11 @@ class Kantor extends Model
         'email',
         'kota_id',
         'alamat',
-        'latitude',
-        'longitude',
-        'radius',
         'status',
     ];
 
     protected $casts = [
         'status' => 'boolean',
-        'latitude' => 'double',
-        'longitude' => 'double',
-        'radius' => 'integer',
     ];
 
     protected static function booted()
@@ -75,9 +69,6 @@ class Kantor extends Model
             'email'       => $data['email'] ?? null,
             'kota_id'     => $data['kota_id'] ?? null,
             'alamat'      => $data['alamat'] ?? null,
-            'latitude'    => $data['latitude'] ?? null,
-            'longitude'   => $data['longitude'] ?? null,
-            'radius'      => $data['radius'] ?? 100,
             'status'      => $data['status'] ?? true,
         ]);
     }
@@ -91,9 +82,6 @@ class Kantor extends Model
             'email'       => $data['email'] ?? $this->email,
             'kota_id'     => $data['kota_id'] ?? $this->kota_id,
             'alamat'      => $data['alamat'] ?? $this->alamat,
-            'latitude'    => $data['latitude'] ?? $this->latitude,
-            'longitude'   => $data['longitude'] ?? $this->longitude,
-            'radius'      => $data['radius'] ?? $this->radius,
             'status'      => $data['status'] ?? $this->status,
         ]);
     }

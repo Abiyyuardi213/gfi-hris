@@ -125,31 +125,7 @@
                                             <textarea name="alamat" class="form-control" rows="3">{{ old('alamat', $kantor->alamat) }}</textarea>
                                         </div>
 
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="latitude">Latitude</label>
-                                                    <input type="number" step="any" name="latitude"
-                                                        class="form-control" placeholder="-6.200000"
-                                                        value="{{ old('latitude', $kantor->latitude) }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="longitude">Longitude</label>
-                                                    <input type="number" step="any" name="longitude"
-                                                        class="form-control" placeholder="106.816666"
-                                                        value="{{ old('longitude', $kantor->longitude) }}">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="radius">Radius (Meter)</label>
-                                                    <input type="number" name="radius" class="form-control"
-                                                        value="{{ old('radius', $kantor->radius) }}">
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </div>
                                 </div>
 

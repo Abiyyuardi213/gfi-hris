@@ -56,4 +56,55 @@ class KotaController extends Controller
 
         return redirect()->route('kota.index')->with('success', 'Kota berhasil dihapus.');
     }
+
+    public function sync()
+    {
+        set_time_limit(300); // 5 minutes
+
+        try {
+            $provinces = \Illuminate\Support\Facades\Http::get('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')->json();
+
+            $count = 0;
+            if ($provinces) {
+                foreach ($provinces as $province) {
+                    $regencies = \Illuminate\Support\Facades\Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/{$province['id']}.json")->json();
+
+                    if ($regencies) {
+                        foreach ($regencies as $regency) {
+                            // Format: KAB. ACEH BARAT -> Tipe: Kabupaten, Nama: Aceh Barat
+                            // Format: KOTA BANDA ACEH -> Tipe: Kota, Nama: Banda Aceh
+
+                            $fullName = $regency['name'];
+                            $tipe = 'Kabupaten'; // Default
+
+                            if (str_starts_with($fullName, 'KOTA ')) {
+                                $tipe = 'Kota';
+                            } elseif (str_starts_with($fullName, 'KAB. ')) {
+                                $tipe = 'Kabupaten';
+                            }
+
+                            // Title case for name (e.g. KAB. ACEH BARAT -> Kab. Aceh Barat)
+                            $namaKota = ucwords(strtolower($fullName));
+
+                            Kota::updateOrCreate(
+                                ['kota' => $namaKota],
+                                ['tipe' => $tipe]
+                            );
+                            $count++;
+                        }
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil sinkronasi {$count} data kota/kabupaten."
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal sinkronasi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

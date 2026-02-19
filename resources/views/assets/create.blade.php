@@ -41,9 +41,9 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Kode Aset (Unique)</label>
+                                            <label>Kode Aset (Auto)</label>
                                             <input type="text" name="kode_aset" class="form-control"
-                                                placeholder="Contoh: INV/2025/001" required>
+                                                value="{{ $kode_aset }}" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -132,7 +132,8 @@
                                         <option value="">-- Tidak Ada / Di Gudang --</option>
                                         @foreach ($pegawais as $p)
                                             <option value="{{ $p->id }}">{{ $p->nama_lengkap }}
-                                                ({{ $p->nip }})</option>
+                                                ({{ $p->nip }})
+                                            </option>
                                         @endforeach
                                     </select>
                                     <small class="text-muted">Kosongkan jika aset disimpan di gudang.</small>
@@ -182,6 +183,8 @@
             });
         });
     </script>
+
+    @include('services.ToastModal')
 </body>
 
 </html>

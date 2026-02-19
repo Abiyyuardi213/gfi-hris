@@ -58,7 +58,11 @@
                 let file = files[0];
 
                 if (!file.type.startsWith('image/')) {
-                    alert('Mohon pilih file gambar.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Mohon pilih file gambar (JPG, PNG, JPEG).',
+                    });
                     return;
                 }
 
@@ -118,7 +122,15 @@
                     // }
 
                     $modal.modal('hide');
-                    alert('Gambar berhasil dipotong dan siap diupload.');
+
+                    // Success Alert
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Gambar berhasil dipotong dan siap diupload.',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
                 }, 'image/jpeg', 0.9);
             }
         });

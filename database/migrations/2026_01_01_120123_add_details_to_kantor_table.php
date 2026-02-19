@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('no_telp')->nullable()->after('nama_kantor');
             $table->string('email')->nullable()->after('no_telp');
             $table->string('tipe_kantor')->default('Cabang')->after('nama_kantor'); // Pusat, Cabang
-            $table->decimal('latitude', 10, 8)->nullable()->after('alamat');
-            $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
-            $table->integer('radius')->default(100)->after('longitude'); // Radius absensi in meters
+            // $table->decimal('latitude', 10, 8)->nullable()->after('alamat');
+            // $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
+            // $table->integer('radius')->default(100)->after('longitude'); // Radius absensi in meters
         });
     }
 

@@ -29,9 +29,6 @@ class KantorController extends Controller
             'email'       => 'nullable|email',
             'kota_id'     => 'nullable|exists:kota,id',
             'alamat'      => 'nullable|string',
-            'latitude'    => 'nullable|numeric',
-            'longitude'   => 'nullable|numeric',
-            'radius'      => 'required|integer|min:10',
             'status'      => 'required|boolean',
         ]);
 
@@ -66,9 +63,6 @@ class KantorController extends Controller
             'email'       => 'nullable|email',
             'kota_id'     => 'nullable|exists:kota,id',
             'alamat'      => 'nullable|string',
-            'latitude'    => 'nullable|numeric',
-            'longitude'   => 'nullable|numeric',
-            'radius'      => 'required|integer|min:10',
             'status'      => 'required|boolean',
         ]);
 

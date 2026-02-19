@@ -60,7 +60,12 @@ class AuthController extends Controller
             }
 
             $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+
+            if ($user->role && in_array($user->role->role_name, ['Super Admin', 'Admin'])) {
+                return redirect()->route('admin.dashboard')->with('success', 'Login Berhasil');
+            }
+
+            return redirect()->intended('dashboard')->with('success', 'Login Berhasil');
         }
 
         return back()->withErrors([
@@ -73,6 +78,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect('/')->with('success', 'Logout Berhasil');
     }
 }

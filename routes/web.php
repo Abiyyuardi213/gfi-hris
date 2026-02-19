@@ -61,7 +61,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('perjalanan-dinas/{id}', [PerjalananDinasController::class, 'show'])->name('perjalanan-dinas.show');
     Route::get('perjalanan-dinas/{id}/print', [PerjalananDinasController::class, 'print'])->name('perjalanan-dinas.print');
 
-    Route::middleware(['role:Super Admin,Admin'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin'])->prefix('admin')->group(function () {
+
+        // Admin Dashboard
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
         // Master Dashboard
         Route::get('master-data', [App\Http\Controllers\MasterDashboardController::class, 'index'])->name('master.dashboard');
@@ -91,6 +94,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('status-pegawai/{id}/toggle-status', [StatusPegawaiController::class, 'toggleStatus'])->name('status-pegawai.toggle-status');
         Route::resource('status-pegawai', StatusPegawaiController::class);
 
+        Route::post('kota/sync', [KotaController::class, 'sync'])->name('kota.sync');
         Route::resource('kota', KotaController::class);
         Route::resource('pegawai', PegawaiController::class);
         Route::resource('mutasi', MutasiController::class); // Modul Mutasi & Promosi

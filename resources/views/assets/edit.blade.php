@@ -43,7 +43,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>Kode Aset</label>
+                                            <label>Kode Aset (Permanent)</label>
                                             <input type="text" name="kode_aset" class="form-control"
                                                 value="{{ $asset->kode_aset }}" readonly>
                                         </div>
@@ -214,6 +214,8 @@
             });
         });
     </script>
+
+    @include('services.ToastModal')
 </body>
 
 </html>

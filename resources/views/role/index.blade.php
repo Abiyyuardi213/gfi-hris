@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <style>
         .toggle-status {
             width: 50px;
@@ -47,6 +49,7 @@
         }
     </style>
 </head>
+
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         @include('include.navbarSistem')
@@ -85,7 +88,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($roles as $index => $role)
+                                        @foreach ($roles as $index => $role)
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $role->role_name }}</td>
@@ -96,12 +99,12 @@
                                                         {{ $role->role_status ? 'checked' : '' }}>
                                                 </td>
                                                 <td class="text-center">
-                                                    <a href="{{ route('role.edit', $role->id) }}" class="btn btn-info btn-sm">
+                                                    <a href="{{ route('role.edit', $role->id) }}"
+                                                        class="btn btn-info btn-sm">
                                                         <i class="fas fa-edit"></i> Edit
                                                     </a>
                                                     <button class="btn btn-danger btn-sm delete-role-btn"
-                                                        data-toggle="modal"
-                                                        data-target="#deleteRoleModal"
+                                                        data-toggle="modal" data-target="#deleteRoleModal"
                                                         data-role-id="{{ $role->id }}">
                                                         <i class="fas fa-trash"></i> Hapus
                                                     </button>
@@ -122,11 +125,13 @@
     </div>
 
     <!-- Modal Konfirmasi Hapus -->
-    <div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-labelledby="deleteRoleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-labelledby="deleteRoleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteRoleModalLabel"><i class="fas fa-exclamation-triangle"></i> Konfirmasi Hapus</h5>
+                    <h5 class="modal-title" id="deleteRoleModalLabel"><i class="fas fa-exclamation-triangle"></i>
+                        Konfirmasi Hapus</h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -156,7 +161,7 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
     {{-- <script src="{{ asset('js/ToastScript.js') }}"></script> --}}
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $("#roleTable").DataTable({
                 "paging": true,
                 "lengthChange": false,
@@ -168,43 +173,50 @@
             });
         });
 
-        $(document).ready(function () {
-            $('.delete-role-btn').click(function () {
+        $(document).ready(function() {
+            $('.delete-role-btn').click(function() {
                 let roleId = $(this).data('role-id');
                 let deleteUrl = "{{ url('role') }}/" + roleId;
                 $('#deleteForm').attr('action', deleteUrl);
             });
         });
 
-        $(document).ready(function () {
-            $(".toggle-status").change(function () {
+        $(document).ready(function() {
+            $(".toggle-status").change(function() {
                 let roleId = $(this).data("role-id");
                 let status = $(this).prop("checked") ? 1 : 0;
 
                 $.post("{{ url('role') }}/" + roleId + "/toggle-status", {
                     _token: '{{ csrf_token() }}',
                     role_status: status
-                }, function (res) {
+                }, function(res) {
                     if (res.success) {
-                        $(".toast-body").text(res.message);
-                        $("#toastNotification").toast({ autohide: true, delay: 3000 }).toast("show");
+                        // Use SweetAlert Toast
+                        Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        }).fire({
+                            icon: 'success',
+                            title: res.message
+                        });
                     } else {
-                        alert("Gagal memperbarui status.");
+                        Swal.fire('Gagal', 'Gagal memperbarui status.', 'error');
                     }
-                }).fail(function () {
-                    alert("Terjadi kesalahan dalam mengubah status.");
+                }).fail(function() {
+                    Swal.fire('Error', 'Terjadi kesalahan dalam mengubah status.', 'error');
                 });
             });
         });
 
-        $(document).ready(function() {
-            @if (session('success') || session('error'))
-                $('#toastNotification').toast({
-                    delay: 3000,
-                    autohide: true
-                }).toast('show');
-            @endif
-        });
+        // Legacy Toast Script Removed in favor of services.ToastModal (SweetAlert)
     </script>
 </body>
+
 </html>

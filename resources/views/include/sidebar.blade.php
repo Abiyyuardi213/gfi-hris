@@ -14,9 +14,8 @@
         <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
             <div class="image">
                 @if (Auth::user()->foto)
-                    <img src="{{ asset('storage/' . Auth::user()->foto) }}?t={{ time() }}"
-                        class="img-circle elevation-2" alt="User Image"
-                        style="width: 45px; height: 45px; object-fit: cover; border: 2px solid white;">
+                    <img src="{{ asset('storage/' . Auth::user()->foto) }}" class="img-circle elevation-2"
+                        alt="User Image" style="width: 45px; height: 45px; object-fit: cover; border: 2px solid white;">
                 @else
                     <img src="{{ asset('image/default-user.png') }}" class="img-circle elevation-2" alt="User Image"
                         style="width: 45px; height: 45px; object-fit: cover; border: 2px solid white;">
@@ -38,7 +37,8 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" data-accordion="false"
                 role="menu">
                 <li class="nav-item">
-                    <a href="{{ url('dashboard') }}" class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}">
+                    <a href="{{ Auth::user()->role->role_name == 'Pegawai' ? route('dashboard') : route('admin.dashboard') }}"
+                        class="nav-link {{ Request::routeIs('dashboard') || Request::routeIs('admin.dashboard') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-truck-loading"></i>
                         <p>Dashboard Utama</p>
                     </a>
@@ -47,7 +47,10 @@
                 @if (strtolower(Auth::user()->role->role_name) != 'pegawai')
                     @php
                         $isMaster =
-                            request()->is('dashboard-master*') || request()->is('role*') || request()->is('user*');
+                            request()->routeIs('master.dashboard') ||
+                            request()->routeIs('role.*') ||
+                            request()->routeIs('user.*') ||
+                            request()->routeIs('kota.*');
                     @endphp
 
                     <li class="nav-item has-treeview {{ $isMaster ? 'menu-open' : '' }}">
@@ -62,30 +65,34 @@
                         <ul class="nav nav-treeview" style="{{ $isMaster ? 'display:block;' : '' }}">
 
                             <li class="nav-item">
-                                <a href="{{ route('master.dashboard') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('master.dashboard') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('master.dashboard') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-warehouse"></i>
                                     <p>Dashboard Master</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('role') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('kota.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('kota.*') ? 'active' : '' }}">
+                                    <i class="nav-icon fas fa-map-marker-alt"></i>
+                                    <p>Master Kota / Kab</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('role.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('role.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-user-shield"></i>
                                     <p>Master Peran</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('user') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('user.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('user.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-users-cog"></i>
                                     <p>Master Pengguna</p>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="#" class="nav-link text-sm pl-4">
-                                    <i class="nav-icon fas fa-city"></i>
-                                    <p>Master Kota</p>
                                 </a>
                             </li>
                         </ul>
@@ -93,15 +100,17 @@
 
                     @php
                         $isOffice =
-                            request()->is('dashboardOffice*') ||
-                            request()->is('kantor*') ||
-                            request()->is('divisi*') ||
-                            request()->is('jabatan*') ||
-                            request()->is('divisi-jabatan*') ||
-                            request()->is('status-pegawai*') ||
-                            request()->is('pegawai*') ||
-                            request()->is('shift-kerja*') ||
-                            request()->is('hari-libur*');
+                            request()->routeIs('master.office.dashboard') ||
+                            request()->routeIs('assets.*') ||
+                            request()->routeIs('kantor.*') ||
+                            request()->routeIs('divisi.*') ||
+                            request()->routeIs('jabatan.*') ||
+                            request()->routeIs('divisi-jabatan.*') ||
+                            request()->routeIs('status-pegawai.*') ||
+                            request()->routeIs('pegawai.*') ||
+                            request()->routeIs('mutasi.*') ||
+                            request()->routeIs('shift-kerja.*') ||
+                            request()->routeIs('hari-libur.*');
                     @endphp
 
                     <li class="nav-item has-treeview {{ $isOffice ? 'menu-open' : '' }}">
@@ -116,77 +125,88 @@
                         <ul class="nav nav-treeview" style="{{ $isOffice ? 'display: block;' : '' }}">
 
                             <li class="nav-item">
-                                <a href="{{ route('master.office.dashboard') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('master.office.dashboard') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('master.office.dashboard') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-chart-line"></i>
                                     <p>Dashboard Office</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('assets.index') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('assets.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('assets.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-cubes"></i>
                                     <p>Manajemen Aset</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('kantor') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('kantor.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('kantor.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-building"></i>
                                     <p>Master Kantor</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('divisi') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('divisi.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('divisi.*') && !request()->routeIs('divisi-jabatan.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-sitemap"></i>
                                     <p>Master Divisi</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('jabatan') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('jabatan.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('jabatan.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-user-tie"></i>
                                     <p>Master Jabatan</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('divisi-jabatan') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('divisi-jabatan.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('divisi-jabatan.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-user-tie"></i>
                                     <p>Master Divisi Jabatan</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('status-pegawai') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('status-pegawai.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('status-pegawai.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-id-card"></i>
                                     <p>Master Status Pegawai</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('pegawai') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('pegawai.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-id-card"></i>
                                     <p>Master Pegawai</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('mutasi.index') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('mutasi.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('mutasi.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-exchange-alt"></i>
                                     <p>Mutasi & Promosi</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('shift-kerja') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('shift-kerja.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('shift-kerja.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-clock"></i>
                                     <p>Master Shift Kerja</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ url('hari-libur') }}" class="nav-link text-sm pl-4">
+                                <a href="{{ route('hari-libur.index') }}"
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('hari-libur.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-calendar-alt"></i>
                                     <p>Master Hari Libur</p>
                                 </a>

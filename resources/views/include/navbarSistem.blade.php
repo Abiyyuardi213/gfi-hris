@@ -26,7 +26,7 @@
                     <hr class="dropdown-divider">
                 </li>
                 <li>
-                    <a class="dropdown-item text-danger" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <a class="dropdown-item text-danger" href="#" onclick="confirmLogout(event)">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>
                 </li>
