@@ -168,12 +168,6 @@
 
     <script>
         $(function() {
-            // Show toast if success message exists (server-side session)
-            @if (session('success'))
-                $('.toast-body').text("{{ session('success') }}");
-                $('#toastNotification').toast('show');
-            @endif
-
             $('#shiftTable').DataTable({
                 paging: true,
                 searching: true,
@@ -183,23 +177,54 @@
 
             $('.delete-btn').click(function() {
                 let id = $(this).data('id');
-                $('#deleteForm').attr('action', "{{ url('shift-kerja') }}/" + id);
+                let url = "{{ route('shift-kerja.destroy', ':id') }}";
+                url = url.replace(':id', id);
+                $('#deleteForm').attr('action', url);
             });
 
             $('.toggle-status').change(function() {
                 let id = $(this).data('id');
+                let isChecked = $(this).is(':checked');
+                let checkbox = $(this);
+                let url = "{{ route('shift-kerja.toggleStatus', ':id') }}";
+                url = url.replace(':id', id);
 
-                $.post("{{ url('shift-kerja') }}/" + id + "/toggle-status", {
+                $.post(url, {
                     _token: "{{ csrf_token() }}"
                 }, function(res) {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+
                     if (res.success) {
-                        $(".toast-body").text(res.message);
-                        $("#toastNotification").toast({
-                            delay: 3000
-                        }).toast("show");
+                        Toast.fire({
+                            icon: 'success',
+                            title: res.message
+                        });
                     } else {
-                        alert("Gagal mengubah status");
+                        Toast.fire({
+                            icon: 'error',
+                            title: res.message
+                        });
+                        checkbox.prop('checked', !isChecked);
                     }
+                }).fail(function() {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Terjadi kesalahan sistem.'
+                    });
+                    checkbox.prop('checked', !isChecked);
                 });
             });
         });

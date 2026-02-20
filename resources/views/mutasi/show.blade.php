@@ -121,6 +121,8 @@
         </div>
 
         @include('include.footerSistem')
+        @include('services.ToastModal')
+        @include('services.LogoutModal')
     </div>
 </body>
 

@@ -129,6 +129,7 @@
         @include('include.footerSistem')
     </div>
 
+    @include('services.ToastModal')
     @include('services.LogoutModal')
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

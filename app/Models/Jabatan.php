@@ -83,10 +83,7 @@ class Jabatan extends Model
         ]);
     }
 
-    public function divisiJabatan()
-    {
-        return $this->hasMany(DivisiJabatan::class, 'jabatan_id');
-    }
+
 
     public function toggleStatus()
     {

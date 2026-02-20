@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DivisiController;
-use App\Http\Controllers\DivisiJabatanController;
+
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KantorController;
 use App\Http\Controllers\KotaController;
@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Master Office Dashboard
         Route::get('dashboardOffice', [App\Http\Controllers\MasterOfficeDashboardController::class, 'index'])->name('master.office.dashboard');
+        Route::get('log-aktivitas', [App\Http\Controllers\ActivityLogController::class, 'index'])->name('activity-log.index');
 
         // Masters
         Route::post('role/{id}/toggle-status', [RoleController::class, 'toggleStatus'])->name('role.toggleStatus');
@@ -83,13 +84,12 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('kantor', KantorController::class);
 
         Route::post('divisi/{id}/toggle-status', [DivisiController::class, 'toggleStatus'])->name('divisi.toggleStatus');
-        Route::resource('divisi', DivisiController::class);
+        Route::resource('divisi', DivisiController::class)->except(['show']);
 
         Route::post('jabatan/{id}/toggle-status', [JabatanController::class, 'toggleStatus'])->name('jabatan.toggleStatus');
         Route::resource('jabatan', JabatanController::class);
 
-        Route::post('divisi-jabatan/{id}/toggle-status', [DivisiJabatanController::class, 'toggleStatus'])->name('divisi-jabatan.toggleStatus');
-        Route::resource('divisi-jabatan', DivisiJabatanController::class);
+
 
         Route::post('status-pegawai/{id}/toggle-status', [StatusPegawaiController::class, 'toggleStatus'])->name('status-pegawai.toggle-status');
         Route::resource('status-pegawai', StatusPegawaiController::class);
@@ -103,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('shift-kerja/{id}/toggle-status', [ShiftKerjaController::class, 'toggleStatus'])->name('shift-kerja.toggleStatus');
         Route::resource('shift-kerja', ShiftKerjaController::class);
 
+        Route::post('hari-libur/sync', [HariLiburController::class, 'syncFromApi'])->name('hari-libur.sync');
         Route::resource('hari-libur', HariLiburController::class);
 
         // Admin Log View

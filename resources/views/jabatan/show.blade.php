@@ -21,80 +21,162 @@
 
         <div class="content-wrapper">
 
+            <!-- Header -->
             <div class="content-header">
                 <div class="container-fluid">
-                    <h1 class="m-0">Detail Jabatan</h1>
-                </div>
-            </div>
-
-            <section class="content">
-                <div class="container-fluid">
-
-                    <div class="card card-info">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-briefcase"></i> Informasi Jabatan
-                            </h3>
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">Detail Jabatan</h1>
                         </div>
-
-                        <div class="card-body">
-                            <table class="table table-bordered table-striped">
-                                <tr>
-                                    <th width="25%">Kode Jabatan</th>
-                                    <td>{{ $jabatan->kode_jabatan }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Nama Jabatan</th>
-                                    <td>{{ $jabatan->nama_jabatan }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Gaji Per Hari</th>
-                                    <td>Rp {{ number_format($jabatan->gaji_per_hari, 0, ',', '.') }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Divisi</th>
-                                    <td>{{ $jabatan->divisi->nama_divisi }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Kantor</th>
-                                    <td>{{ $jabatan->divisi->kantor->nama_kantor }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Deskripsi</th>
-                                    <td>{{ $jabatan->deskripsi ?? '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Status</th>
-                                    <td>
-                                        @if ($jabatan->status)
-                                            <span class="badge badge-success">Aktif</span>
-                                        @else
-                                            <span class="badge badge-danger">Nonaktif</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Dibuat</th>
-                                    <td>{{ $jabatan->created_at->format('d M Y H:i') }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Terakhir Diubah</th>
-                                    <td>{{ $jabatan->updated_at->format('d M Y H:i') }}</td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <div class="card-footer">
-                            <a href="{{ route('jabatan.index') }}" class="btn btn-secondary">
+                        <div class="col-sm-6 text-right">
+                            <a href="{{ route('jabatan.index') }}" class="btn btn-default">
                                 <i class="fas fa-arrow-left"></i> Kembali
-                            </a>
-                            <a href="{{ route('jabatan.edit', $jabatan->id) }}" class="btn btn-warning">
-                                <i class="fas fa-edit"></i> Ubah
                             </a>
                         </div>
                     </div>
-
                 </div>
+            </div>
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <!-- Left Column: Profile-style Card -->
+                        <div class="col-md-3">
+                            <div class="card card-primary card-outline">
+                                <div class="card-body box-profile">
+                                    <div class="text-center">
+                                        <div class="profile-user-img img-fluid img-circle d-flex align-items-center justify-content-center bg-primary mb-3"
+                                            style="width: 100px; height: 100px; margin: 0 auto; font-size: 40px; color: white;">
+                                            <i class="fas fa-briefcase"></i>
+                                        </div>
+                                    </div>
+
+                                    <h3 class="profile-username text-center">{{ $jabatan->nama_jabatan }}</h3>
+                                    <p class="text-muted text-center">{{ $jabatan->kode_jabatan }}</p>
+
+                                    <ul class="list-group list-group-unbordered mb-3">
+                                        <li class="list-group-item">
+                                            <b>Status</b>
+                                            <a class="float-right">
+                                                @if ($jabatan->status)
+                                                    <span class="badge badge-success">Aktif</span>
+                                                @else
+                                                    <span class="badge badge-danger">Nonaktif</span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Dibuat</b> <a
+                                                class="float-right">{{ $jabatan->created_at->format('d M Y') }}</a>
+                                        </li>
+                                    </ul>
+
+                                    <a href="{{ route('jabatan.edit', $jabatan->id) }}"
+                                        class="btn btn-primary btn-block">
+                                        <b>Edit Jabatan</b>
+                                    </a>
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+
+                            <!-- Info Box -->
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Metadata</h3>
+                                </div>
+                                <div class="card-body">
+                                    <strong><i class="fas fa-calendar-alt mr-1"></i> Tgl Dibuat</strong>
+                                    <p class="text-muted">{{ $jabatan->created_at->format('d M Y H:i') }}</p>
+                                    <hr>
+                                    <strong><i class="fas fa-edit mr-1"></i> Terakhir Diubah</strong>
+                                    <p class="text-muted">{{ $jabatan->updated_at->format('d M Y H:i') }}</p>
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                        <!-- /.col -->
+
+                        <!-- Right Column: Details Tabs -->
+                        <div class="col-md-9">
+                            <div class="card">
+                                <div class="card-header p-2">
+                                    <ul class="nav nav-pills">
+                                        <li class="nav-item"><a class="nav-link active" href="#details"
+                                                data-toggle="tab">Detail Informasi</a></li>
+                                    </ul>
+                                </div><!-- /.card-header -->
+                                <div class="card-body">
+                                    <div class="tab-content">
+                                        <div class="active tab-pane" id="details">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <h5 class="text-primary"><i class="fas fa-info-circle"></i>
+                                                        Informasi
+                                                        Utama</h5>
+                                                    <hr>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <dl class="row">
+                                                        <dt class="col-sm-4">Kode Jabatan</dt>
+                                                        <dd class="col-sm-8">{{ $jabatan->kode_jabatan }}</dd>
+
+                                                        <dt class="col-sm-4">Nama Jabatan</dt>
+                                                        <dd class="col-sm-8">{{ $jabatan->nama_jabatan }}</dd>
+
+                                                        <dt class="col-sm-4">Gaji Per Hari</dt>
+                                                        <dd class="col-sm-8 text-success">
+                                                            <strong>Rp
+                                                                {{ number_format($jabatan->gaji_per_hari, 0, ',', '.') }}</strong>
+                                                        </dd>
+                                                    </dl>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <dl class="row">
+                                                        <dt class="col-sm-4">Divisi</dt>
+                                                        <dd class="col-sm-8">
+                                                            {{ $jabatan->divisi->nama_divisi ?? '-' }}
+                                                            <br>
+                                                            <small class="text-muted">Kode:
+                                                                {{ $jabatan->divisi->kode_divisi ?? '-' }}</small>
+                                                        </dd>
+
+                                                        <dt class="col-sm-4">Status</dt>
+                                                        <dd class="col-sm-8">
+                                                            @if ($jabatan->status)
+                                                                <span class="badge badge-success">Aktif</span>
+                                                            @else
+                                                                <span class="badge badge-danger">Nonaktif</span>
+                                                            @endif
+                                                        </dd>
+                                                    </dl>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mt-4">
+                                                <div class="col-12">
+                                                    <h5 class="text-primary"><i class="fas fa-align-left"></i> Deskripsi
+                                                    </h5>
+                                                    <hr>
+                                                    <p class="text-muted">
+                                                        {{ $jabatan->deskripsi ?? 'Tidak ada deskripsi.' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.tab-pane -->
+                                    </div>
+                                    <!-- /.tab-content -->
+                                </div><!-- /.card-body -->
+                            </div>
+                            <!-- /.nav-tabs-custom -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
             </section>
         </div>
 

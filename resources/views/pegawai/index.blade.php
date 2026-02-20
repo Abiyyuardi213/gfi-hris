@@ -160,13 +160,11 @@
                 }
             });
 
-            @if (session('success') || session('error'))
-                $('#toastNotification').toast('show');
-            @endif
-
             $('.delete-btn').click(function() {
                 let id = $(this).data('id');
-                $('#deleteForm').attr('action', '{{ url('pegawai') }}/' + id);
+                let url = "{{ route('pegawai.destroy', ':id') }}";
+                url = url.replace(':id', id);
+                $('#deleteForm').attr('action', url);
             });
         });
     </script>

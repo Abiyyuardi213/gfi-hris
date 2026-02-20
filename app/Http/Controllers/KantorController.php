@@ -32,7 +32,9 @@ class KantorController extends Controller
             'status'      => 'required|boolean',
         ]);
 
-        Kantor::createKantor($request->all());
+        $kantor = Kantor::createKantor($request->all());
+
+        \App\Helpers\ActivityLogger::log('Create Kantor', 'Menambahkan kantor baru: ' . $kantor->nama_kantor);
 
         return redirect()
             ->route('kantor.index')
@@ -68,6 +70,8 @@ class KantorController extends Controller
 
         $kantor->updateKantor($request->all());
 
+        \App\Helpers\ActivityLogger::log('Update Kantor', 'Memperbarui kantor: ' . $kantor->nama_kantor);
+
         return redirect()
             ->route('kantor.index')
             ->with('success', 'Kantor berhasil diperbarui.');
@@ -76,7 +80,10 @@ class KantorController extends Controller
     public function destroy($id)
     {
         $kantor = Kantor::findOrFail($id);
-        $kantor->delete(); // Changed from deleteKantor() as standard delete is available
+        $nama = $kantor->nama_kantor;
+        $kantor->delete();
+
+        \App\Helpers\ActivityLogger::log('Delete Kantor', 'Menghapus kantor: ' . $nama);
 
         return redirect()
             ->route('kantor.index')
@@ -88,6 +95,8 @@ class KantorController extends Controller
         try {
             $kantor = Kantor::findOrFail($id);
             $kantor->toggleStatus();
+
+            \App\Helpers\ActivityLogger::log('Toggle Status Kantor', 'Mengubah status kantor: ' . $kantor->nama_kantor);
 
             return response()->json([
                 'success' => true,

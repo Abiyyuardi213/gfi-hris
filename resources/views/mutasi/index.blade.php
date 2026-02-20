@@ -90,6 +90,7 @@
 
         @include('include.footerSistem')
         @include('services.ToastModal')
+        @include('services.LogoutModal')
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -104,9 +105,6 @@
                     [0, "desc"]
                 ]
             });
-            @if (session('success'))
-                $('#toastNotification').toast('show');
-            @endif
         });
     </script>
 </body>

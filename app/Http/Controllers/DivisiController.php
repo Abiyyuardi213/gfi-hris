@@ -10,49 +10,40 @@ class DivisiController extends Controller
 {
     public function index()
     {
-        $divisis = Divisi::with('kantor')
-            ->orderBy('created_at', 'asc')
-            ->get();
+        $divisis = Divisi::orderBy('created_at', 'asc')->get();
 
         return view('divisi.index', compact('divisis'));
     }
 
     public function create()
     {
-        $kantors = Kantor::where('status', true)->get();
-
-        return view('divisi.create', compact('kantors'));
+        return view('divisi.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'kantor_id'   => 'required|exists:kantor,id',
             'nama_divisi' => 'required|string|max:255',
             'deskripsi'   => 'nullable|string',
             'status'      => 'required|boolean',
         ]);
 
-        Divisi::createDivisi($request->all());
+        $divisi = Divisi::createDivisi($request->all());
+
+        \App\Helpers\ActivityLogger::log('Create Divisi', 'Menambahkan divisi baru: ' . $divisi->nama_divisi);
 
         return redirect()
             ->route('divisi.index')
             ->with('success', 'Divisi berhasil ditambahkan.');
     }
 
-    public function show($id)
-    {
-        $divisi = Divisi::with('kantor')->findOrFail($id);
 
-        return view('divisi.show', compact('divisi'));
-    }
 
     public function edit($id)
     {
         $divisi  = Divisi::findOrFail($id);
-        $kantors = Kantor::where('status', true)->get();
 
-        return view('divisi.edit', compact('divisi', 'kantors'));
+        return view('divisi.edit', compact('divisi'));
     }
 
     public function update(Request $request, $id)
@@ -60,13 +51,14 @@ class DivisiController extends Controller
         $divisi = Divisi::findOrFail($id);
 
         $request->validate([
-            'kantor_id'   => 'required|exists:kantor,id',
             'nama_divisi' => 'required|string|max:255',
             'deskripsi'   => 'nullable|string',
             'status'      => 'required|boolean',
         ]);
 
         $divisi->updateDivisi($request->all());
+
+        \App\Helpers\ActivityLogger::log('Update Divisi', 'Memperbarui divisi: ' . $divisi->nama_divisi);
 
         return redirect()
             ->route('divisi.index')
@@ -76,7 +68,10 @@ class DivisiController extends Controller
     public function destroy($id)
     {
         $divisi = Divisi::findOrFail($id);
+        $nama = $divisi->nama_divisi;
         $divisi->delete();
+
+        \App\Helpers\ActivityLogger::log('Delete Divisi', 'Menghapus divisi: ' . $nama);
 
         return redirect()
             ->route('divisi.index')
@@ -88,6 +83,8 @@ class DivisiController extends Controller
         try {
             $divisi = Divisi::findOrFail($id);
             $divisi->toggleStatus();
+
+            \App\Helpers\ActivityLogger::log('Toggle Status Divisi', 'Mengubah status divisi: ' . $divisi->nama_divisi);
 
             return response()->json([
                 'success' => true,

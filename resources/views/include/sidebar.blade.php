@@ -44,6 +44,16 @@
                     </a>
                 </li>
 
+                @if (in_array(strtolower(Auth::user()->role->role_name), ['super admin', 'admin']))
+                    <li class="nav-item">
+                        <a href="{{ route('activity-log.index') }}"
+                            class="nav-link {{ request()->routeIs('activity-log.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-history"></i>
+                            <p>Log Aktivitas</p>
+                        </a>
+                    </li>
+                @endif
+
                 @if (strtolower(Auth::user()->role->role_name) != 'pegawai')
                     @php
                         $isMaster =
@@ -105,7 +115,6 @@
                             request()->routeIs('kantor.*') ||
                             request()->routeIs('divisi.*') ||
                             request()->routeIs('jabatan.*') ||
-                            request()->routeIs('divisi-jabatan.*') ||
                             request()->routeIs('status-pegawai.*') ||
                             request()->routeIs('pegawai.*') ||
                             request()->routeIs('mutasi.*') ||
@@ -132,6 +141,8 @@
                                 </a>
                             </li>
 
+
+
                             <li class="nav-item">
                                 <a href="{{ route('assets.index') }}"
                                     class="nav-link text-sm pl-4 {{ request()->routeIs('assets.*') ? 'active' : '' }}">
@@ -150,7 +161,7 @@
 
                             <li class="nav-item">
                                 <a href="{{ route('divisi.index') }}"
-                                    class="nav-link text-sm pl-4 {{ request()->routeIs('divisi.*') && !request()->routeIs('divisi-jabatan.*') ? 'active' : '' }}">
+                                    class="nav-link text-sm pl-4 {{ request()->routeIs('divisi.*') ? 'active' : '' }}">
                                     <i class="nav-icon fas fa-sitemap"></i>
                                     <p>Master Divisi</p>
                                 </a>
@@ -164,13 +175,7 @@
                                 </a>
                             </li>
 
-                            <li class="nav-item">
-                                <a href="{{ route('divisi-jabatan.index') }}"
-                                    class="nav-link text-sm pl-4 {{ request()->routeIs('divisi-jabatan.*') ? 'active' : '' }}">
-                                    <i class="nav-icon fas fa-user-tie"></i>
-                                    <p>Master Divisi Jabatan</p>
-                                </a>
-                            </li>
+
 
                             <li class="nav-item">
                                 <a href="{{ route('status-pegawai.index') }}"

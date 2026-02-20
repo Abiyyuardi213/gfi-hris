@@ -51,7 +51,7 @@
                                         @foreach ($divisis as $divisi)
                                             <option value="{{ $divisi->id }}"
                                                 {{ old('divisi_id', $jabatan->divisi_id) == $divisi->id ? 'selected' : '' }}>
-                                                {{ $divisi->nama_divisi }} ({{ $divisi->kantor->nama_kantor }})
+                                                {{ $divisi->kode_divisi }} | {{ $divisi->nama_divisi }}
                                             </option>
                                         @endforeach
                                     </select>

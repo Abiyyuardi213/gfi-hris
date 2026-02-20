@@ -87,7 +87,6 @@
                                             <th>Nama Jabatan</th>
                                             <th>Gaji Per Hari</th>
                                             <th>Divisi</th>
-                                            <th>Kantor</th>
                                             <th>Status</th>
                                             <th width="180">Aksi</th>
                                         </tr>
@@ -100,7 +99,6 @@
                                                 <td>{{ $jabatan->nama_jabatan }}</td>
                                                 <td>Rp {{ number_format($jabatan->gaji_per_hari, 0, ',', '.') }}</td>
                                                 <td>{{ $jabatan->divisi->nama_divisi }}</td>
-                                                <td>{{ $jabatan->divisi->kantor->nama_kantor }}</td>
                                                 <td class="text-center">
                                                     <input type="checkbox" class="toggle-status"
                                                         data-id="{{ $jabatan->id }}"
@@ -193,15 +191,62 @@
                     _token: "{{ csrf_token() }}"
                 }, function(res) {
                     if (res.success) {
-                        $(".toast-body").text(res.message);
-                        $("#toastNotification").toast({
-                            delay: 3000
-                        }).toast("show");
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: res.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
                     } else {
-                        alert("Gagal mengubah status");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: res.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
                     }
+                }).fail(function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Terjadi kesalahan pada server.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
                 });
             });
+
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: "{{ session('success') }}",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: "{{ session('error') }}",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            @endif
         });
     </script>
 

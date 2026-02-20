@@ -22,10 +22,10 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->foreign('kantor_id')
-                  ->references('id')
-                  ->on('kantor')
-                  ->onDelete('cascade');
+            // $table->foreign('kantor_id')
+            //       ->references('id')
+            //       ->on('kantor')
+            //       ->onDelete('cascade');
         });
     }
 

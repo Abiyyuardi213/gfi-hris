@@ -10,7 +10,7 @@ class JabatanController extends Controller
 {
     public function index()
     {
-        $jabatans = Jabatan::with('divisi.kantor')
+        $jabatans = Jabatan::with('divisi')
             ->orderBy('created_at', 'asc')
             ->get();
 
@@ -20,7 +20,6 @@ class JabatanController extends Controller
     public function create()
     {
         $divisis = Divisi::where('status', true)
-            ->with('kantor')
             ->get();
 
         return view('jabatan.create', compact('divisis'));
@@ -45,7 +44,7 @@ class JabatanController extends Controller
 
     public function show($id)
     {
-        $jabatan = Jabatan::with('divisi.kantor')
+        $jabatan = Jabatan::with('divisi')
             ->findOrFail($id);
 
         return view('jabatan.show', compact('jabatan'));
@@ -56,7 +55,6 @@ class JabatanController extends Controller
         $jabatan = Jabatan::findOrFail($id);
 
         $divisis = Divisi::where('status', true)
-            ->with('kantor')
             ->orderBy('nama_divisi')
             ->get();
 

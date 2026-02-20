@@ -75,4 +75,97 @@ class HariLiburController extends Controller
             ->route('hari-libur.index')
             ->with('success', 'Hari Libur berhasil dihapus.');
     }
+
+    public function syncFromApi()
+    {
+        try {
+            // Using a more reliable and up-to-date API for Indonesian Holidays
+            // Today's date from system is 2026.
+            $year = date('Y');
+            $yearsToSync = [$year, $year + 1];
+            $count = 0;
+
+            foreach ($yearsToSync as $y) {
+                // Try several API variants if one fails
+                $endpoints = [
+                    "https://api-hari-libur.vercel.app/api?year={$y}",
+                    "https://libur.deno.dev/api?year={$y}"
+                ];
+
+                foreach ($endpoints as $url) {
+                    $response = \Illuminate\Support\Facades\Http::timeout(10)->get($url);
+
+                    if ($response->successful()) {
+                        $holidays = $response->json();
+
+                        // Handle structure from api-hari-libur.vercel.app which might be [ { "holiday_date": "...", "holiday_name": "..." } ]
+                        // or { "data": [...] }
+                        $data = isset($holidays['data']) ? $holidays['data'] : $holidays;
+
+                        if (is_array($data)) {
+                            foreach ($data as $h) {
+                                // Extract date and name with various possible keys
+                                $tanggalStr = $h['holiday_date'] ?? $h['tanggal'] ?? $h['date'] ?? null;
+                                $nama = $h['holiday_name'] ?? $h['keterangan'] ?? $h['name'] ?? null;
+                                $isCuti = $h['is_cuti'] ?? (isset($nama) && strpos(strtolower($nama), 'cuti bersama') !== false);
+
+                                if (!$tanggalStr || !$nama) continue;
+
+                                // Normalize date format to Y-m-d
+                                try {
+                                    $tanggal = \Carbon\Carbon::parse($tanggalStr)->format('Y-m-d');
+                                } catch (\Exception $e) {
+                                    continue;
+                                }
+
+                                // Check if already exists by date and name to avoid duplicates
+                                $exists = HariLibur::where('tanggal', $tanggal)
+                                    ->where('nama_libur', $nama)
+                                    ->exists();
+
+                                if (!$exists) {
+                                    HariLibur::create([
+                                        'nama_libur'      => $nama,
+                                        'tanggal'         => $tanggal,
+                                        'is_cuti_bersama' => $isCuti,
+                                        'kantor_id'       => null,
+                                        'deskripsi'       => 'Sinkronisasi Otomatis API (Standard 2026)'
+                                    ]);
+                                    $count++;
+                                }
+                            }
+                            // If we successfully got data from one endpoint, no need to try the next one for this year
+                            break;
+                        }
+                    }
+                }
+            }
+
+            $msg = $count > 0
+                ? "Berhasil menyinkronkan {$count} hari libur baru untuk tahun {$year} & " . ($year + 1) . "."
+                : "Sinkronisasi selesai. Tidak ada hari libur baru yang ditambahkan (data sudah mutakhir).";
+
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $msg
+                ]);
+            }
+
+            return redirect()
+                ->route('hari-libur.index')
+                ->with('success', $msg);
+        } catch (\Exception $e) {
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menyinkronkan data: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()
+                ->route('hari-libur.index')
+                ->with('error', 'Gagal menyinkronkan data: ' . $e->getMessage());
+        }
+    }
 }

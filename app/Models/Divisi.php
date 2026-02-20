@@ -13,7 +13,6 @@ class Divisi extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'kantor_id',
         'kode_divisi',
         'nama_divisi',
         'deskripsi',
@@ -33,10 +32,10 @@ class Divisi extends Model
         });
     }
 
-    public function kantor()
-    {
-        return $this->belongsTo(Kantor::class, 'kantor_id');
-    }
+    // public function kantor()
+    // {
+    //     return $this->belongsTo(Kantor::class, 'kantor_id');
+    // }
 
     protected static function generateKodeDivisi(string $namaDivisi): string
     {
@@ -62,7 +61,6 @@ class Divisi extends Model
     public static function createDivisi(array $data)
     {
         return self::create([
-            'kantor_id'   => $data['kantor_id'],
             'nama_divisi' => $data['nama_divisi'],
             'deskripsi'   => $data['deskripsi'] ?? null,
             'status'      => $data['status'] ?? true,
@@ -72,17 +70,13 @@ class Divisi extends Model
     public function updateDivisi(array $data)
     {
         $this->update([
-            'kantor_id'   => $data['kantor_id'],
             'nama_divisi' => $data['nama_divisi'],
             'deskripsi'   => $data['deskripsi'] ?? $this->deskripsi,
             'status'      => $data['status'] ?? $this->status,
         ]);
     }
 
-    public function divisiJabatan()
-    {
-        return $this->hasMany(DivisiJabatan::class, 'divisi_id');
-    }
+
 
     public function toggleStatus()
     {

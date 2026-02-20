@@ -34,9 +34,14 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title">Daftar Hari Libur</h3>
-                            <a href="{{ route('hari-libur.create') }}" class="btn btn-primary btn-sm ml-auto">
-                                <i class="fas fa-plus"></i> Tambah Hari Libur
-                            </a>
+                            <div class="ml-auto">
+                                <button type="button" id="btnSyncApi" class="btn btn-success btn-sm mr-1">
+                                    <i class="fas fa-sync"></i> Sinkronisasi via API
+                                </button>
+                                <a href="{{ route('hari-libur.create') }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Tambah Hari Libur
+                                </a>
+                            </div>
                         </div>
 
                         <div class="card-body">
@@ -138,12 +143,6 @@
 
     <script>
         $(function() {
-            // Show toast if success message exists (server-side session)
-            @if (session('success'))
-                $('.toast-body').text("{{ session('success') }}");
-                $('#toastNotification').toast('show');
-            @endif
-
             $('#liburTable').DataTable({
                 paging: true,
                 searching: true,
@@ -153,7 +152,55 @@
 
             $('.delete-btn').click(function() {
                 let id = $(this).data('id');
-                $('#deleteForm').attr('action', "{{ url('hari-libur') }}/" + id);
+                let url = "{{ route('hari-libur.destroy', ':id') }}";
+                url = url.replace(':id', id);
+                $('#deleteForm').attr('action', url);
+            });
+
+            $('#btnSyncApi').click(function() {
+                Swal.fire({
+                    title: 'Konfirmasi Sinkronisasi',
+                    text: "Sistem akan mengambil data hari libur nasional dari API. Pastikan koneksi internet tersedia.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Sinkronkan!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Sedang Sinkronisasi...',
+                            html: 'Mohon tunggu sebentar, sistem sedang menghubungi API hari libur.',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading()
+                            }
+                        });
+
+                        $.post("{{ route('hari-libur.sync') }}", {
+                            _token: "{{ csrf_token() }}"
+                        }, function(res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: res.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Gagal!', res.message, 'error');
+                            }
+                        }).fail(function(xhr) {
+                            Swal.fire('Error!', 'Terjadi kesalahan saat sinkronisasi: ' + (
+                                xhr.responseJSON ? xhr.responseJSON.message :
+                                'Unknown error'), 'error');
+                        });
+                    }
+                });
             });
         });
     </script>
