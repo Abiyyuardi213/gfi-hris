@@ -79,93 +79,78 @@ class HariLiburController extends Controller
     public function syncFromApi()
     {
         try {
-            // Using a more reliable and up-to-date API for Indonesian Holidays
-            // Today's date from system is 2026.
             $year = date('Y');
             $yearsToSync = [$year, $year + 1];
             $count = 0;
 
             foreach ($yearsToSync as $y) {
-                // Try several API variants if one fails
                 $endpoints = [
+                    "https://libur.deno.dev/api?year={$y}",
                     "https://api-hari-libur.vercel.app/api?year={$y}",
-                    "https://libur.deno.dev/api?year={$y}"
+                    "https://dayoffapi.vercel.app/api/v1/holidays?year={$y}"
                 ];
 
                 foreach ($endpoints as $url) {
-                    $response = \Illuminate\Support\Facades\Http::timeout(10)->get($url);
+                    try {
+                        $response = \Illuminate\Support\Facades\Http::timeout(10)->get($url);
+                        if ($response->successful()) {
+                            $holidays = $response->json();
+                            $data = $holidays;
+                            if (isset($holidays['data'])) $data = $holidays['data'];
+                            elseif (isset($holidays['holidays'])) $data = $holidays['holidays'];
 
-                    if ($response->successful()) {
-                        $holidays = $response->json();
+                            if (is_array($data) && count($data) > 0) {
+                                foreach ($data as $h) {
+                                    $tanggalStr = $h['holiday_date'] ?? $h['tanggal'] ?? $h['date'] ?? null;
+                                    $nama = $h['holiday_name'] ?? $h['keterangan'] ?? $h['name'] ?? null;
+                                    if (!$tanggalStr || !$nama) continue;
 
-                        // Handle structure from api-hari-libur.vercel.app which might be [ { "holiday_date": "...", "holiday_name": "..." } ]
-                        // or { "data": [...] }
-                        $data = isset($holidays['data']) ? $holidays['data'] : $holidays;
+                                    try {
+                                        $tanggal = \Carbon\Carbon::parse($tanggalStr)->format('Y-m-d');
+                                    } catch (\Exception $e) {
+                                        continue;
+                                    }
 
-                        if (is_array($data)) {
-                            foreach ($data as $h) {
-                                // Extract date and name with various possible keys
-                                $tanggalStr = $h['holiday_date'] ?? $h['tanggal'] ?? $h['date'] ?? null;
-                                $nama = $h['holiday_name'] ?? $h['keterangan'] ?? $h['name'] ?? null;
-                                $isCuti = $h['is_cuti'] ?? (isset($nama) && strpos(strtolower($nama), 'cuti bersama') !== false);
+                                    $isCuti = isset($h['is_cuti']) ? $h['is_cuti'] : (strpos(strtolower($nama), 'cuti bersama') !== false);
 
-                                if (!$tanggalStr || !$nama) continue;
+                                    $exists = HariLibur::where('tanggal', $tanggal)
+                                        ->where('nama_libur', $nama)
+                                        ->exists();
 
-                                // Normalize date format to Y-m-d
-                                try {
-                                    $tanggal = \Carbon\Carbon::parse($tanggalStr)->format('Y-m-d');
-                                } catch (\Exception $e) {
-                                    continue;
+                                    if (!$exists) {
+                                        HariLibur::create([
+                                            'nama_libur'      => $nama,
+                                            'tanggal'         => $tanggal,
+                                            'is_cuti_bersama' => (bool)$isCuti,
+                                            'kantor_id'       => null,
+                                            'deskripsi'       => 'Sinkronisasi Otomatis API'
+                                        ]);
+                                        $count++;
+                                    }
                                 }
-
-                                // Check if already exists by date and name to avoid duplicates
-                                $exists = HariLibur::where('tanggal', $tanggal)
-                                    ->where('nama_libur', $nama)
-                                    ->exists();
-
-                                if (!$exists) {
-                                    HariLibur::create([
-                                        'nama_libur'      => $nama,
-                                        'tanggal'         => $tanggal,
-                                        'is_cuti_bersama' => $isCuti,
-                                        'kantor_id'       => null,
-                                        'deskripsi'       => 'Sinkronisasi Otomatis API (Standard 2026)'
-                                    ]);
-                                    $count++;
-                                }
+                                break;
                             }
-                            // If we successfully got data from one endpoint, no need to try the next one for this year
-                            break;
                         }
+                    } catch (\Exception $e) {
+                        continue;
                     }
                 }
             }
 
+            $totalData = HariLibur::count();
             $msg = $count > 0
-                ? "Berhasil menyinkronkan {$count} hari libur baru untuk tahun {$year} & " . ($year + 1) . "."
-                : "Sinkronisasi selesai. Tidak ada hari libur baru yang ditambahkan (data sudah mutakhir).";
+                ? "Berhasil menyinkronkan {$count} hari libur baru. Total data: {$totalData}."
+                : ($totalData > 0
+                    ? "Sinkronisasi selesai. Tidak ada hari libur baru yang ditambahkan. Total data: {$totalData}."
+                    : "Gagal menarik data dari API. Pastikan sumber API memiliki data untuk tahun " . implode(' & ', $yearsToSync));
 
             if (request()->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => $msg
-                ]);
+                return response()->json(['success' => $count > 0 || $totalData > 0, 'message' => $msg]);
             }
-
-            return redirect()
-                ->route('hari-libur.index')
-                ->with('success', $msg);
+            return redirect()->route('hari-libur.index')->with($count > 0 || $totalData > 0 ? 'success' : 'error', $msg);
         } catch (\Exception $e) {
-            if (request()->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Gagal menyinkronkan data: ' . $e->getMessage()
-                ], 500);
-            }
-
-            return redirect()
-                ->route('hari-libur.index')
-                ->with('error', 'Gagal menyinkronkan data: ' . $e->getMessage());
+            if (request()->ajax()) return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
+            return redirect()->route('hari-libur.index')->with('error', 'Error: ' . $e->getMessage());
         }
     }
 }
