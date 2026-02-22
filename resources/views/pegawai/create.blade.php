@@ -132,7 +132,8 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Divisi <span class="text-danger">*</span></label>
-                                                    <select name="divisi_id" class="form-control" required>
+                                                    <select name="divisi_id" id="divisi_id" class="form-control"
+                                                        required>
                                                         <option value="">-- Pilih Divisi --</option>
                                                         @foreach ($divisis as $divisi)
                                                             <option value="{{ $divisi->id }}"
@@ -140,19 +141,24 @@
                                                                 {{ $divisi->nama_divisi }}</option>
                                                         @endforeach
                                                     </select>
+
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Jabatan <span class="text-danger">*</span></label>
-                                                    <select name="jabatan_id" class="form-control" required>
+                                                    <select name="jabatan_id" id="jabatan_id" class="form-control"
+                                                        required>
                                                         <option value="">-- Pilih Jabatan --</option>
-                                                        @foreach ($jabatans as $jabatan)
-                                                            <option value="{{ $jabatan->id }}"
-                                                                {{ old('jabatan_id') == $jabatan->id ? 'selected' : '' }}>
-                                                                {{ $jabatan->nama_jabatan }}</option>
-                                                        @endforeach
+                                                        @if (old('divisi_id'))
+                                                            @foreach ($jabatans->where('divisi_id', old('divisi_id')) as $jabatan)
+                                                                <option value="{{ $jabatan->id }}"
+                                                                    {{ old('jabatan_id') == $jabatan->id ? 'selected' : '' }}>
+                                                                    {{ $jabatan->nama_jabatan }}</option>
+                                                            @endforeach
+                                                        @endif
                                                     </select>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -247,6 +253,39 @@
     @include('services.ToastModal')
     @include('services.LogoutModal')
     @include('include.cropperModal')
+
+    <script>
+        $(document).ready(function() {
+            $('#divisi_id').change(function() {
+                var divisiId = $(this).val();
+                var $jabatanSelect = $('#jabatan_id');
+
+                $jabatanSelect.empty().append('<option value="">-- Pilih Jabatan --</option>');
+
+                if (divisiId) {
+                    $.ajax({
+                        url: "{{ route('jabatan.by-divisi', ':id') }}".replace(':id', divisiId),
+                        type: "GET",
+                        dataType: "json",
+                        success: function(data) {
+                            $.each(data, function(key, value) {
+                                $jabatanSelect.append('<option value="' + value.id +
+                                    '">' +
+                                    value.nama_jabatan + '</option>');
+                            });
+                        },
+                        error: function() {
+                            Toast.fire({
+                                icon: 'error',
+                                title: 'Gagal memuat data jabatan.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 </body>
+
 
 </html>

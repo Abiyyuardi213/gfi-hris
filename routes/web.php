@@ -86,8 +86,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('divisi/{id}/toggle-status', [DivisiController::class, 'toggleStatus'])->name('divisi.toggleStatus');
         Route::resource('divisi', DivisiController::class)->except(['show']);
 
+        Route::get('jabatan/by-divisi/{divisi_id}', [JabatanController::class, 'getByDivisi'])->name('jabatan.by-divisi');
         Route::post('jabatan/{id}/toggle-status', [JabatanController::class, 'toggleStatus'])->name('jabatan.toggleStatus');
         Route::resource('jabatan', JabatanController::class);
+
 
 
 

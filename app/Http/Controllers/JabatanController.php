@@ -109,4 +109,15 @@ class JabatanController extends Controller
             ], 500);
         }
     }
+
+    public function getByDivisi($divisi_id)
+
+    {
+        $jabatans = Jabatan::where('divisi_id', $divisi_id)
+            ->where('status', true)
+            ->orderBy('nama_jabatan', 'asc')
+            ->get();
+
+        return response()->json($jabatans);
+    }
 }
