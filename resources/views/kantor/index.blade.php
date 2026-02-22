@@ -138,11 +138,17 @@
                                                         class="btn btn-info btn-xs" title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <button class="btn btn-danger btn-xs delete-kantor-btn"
-                                                        data-toggle="modal" data-target="#deleteKantorModal"
-                                                        data-kantor-id="{{ $kantor->id }}" title="Hapus">
+                                                    <button type="button" class="btn btn-danger btn-xs"
+                                                        onclick="confirmDelete('{{ $kantor->id }}')" title="Hapus">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    <form id="delete-form-{{ $kantor->id }}"
+                                                        action="{{ route('kantor.destroy', $kantor->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -159,39 +165,9 @@
         @include('include.footerSistem')
     </div>
 
-    <!-- Modal Hapus Kantor -->
-    <div class="modal fade" id="deleteKantorModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-exclamation-triangle"></i> Konfirmasi Hapus
-                    </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
 
-                <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus kantor ini?
-                </div>
 
-                <form id="deleteForm" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Hapus
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    @include('services.ToastModal')
-    @include('services.LogoutModal')
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -199,6 +175,9 @@
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
+    @include('services.ToastModal')
+    @include('services.LogoutModal')
 
     <script>
         $(function() {
@@ -210,10 +189,7 @@
                 autoWidth: false
             });
 
-            $('.delete-kantor-btn').click(function() {
-                let id = $(this).data('kantor-id');
-                $('#deleteForm').attr('action', "{{ url('kantor') }}/" + id);
-            });
+
 
             $('.toggle-status').change(function() {
                 let id = $(this).data('kantor-id');
@@ -222,63 +198,43 @@
                     _token: '{{ csrf_token() }}'
                 }, function(res) {
                     if (res.success) {
-                        Swal.fire({
+                        Toast.fire({
                             icon: 'success',
-                            title: 'Berhasil',
-                            text: res.message,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000
+                            title: res.message
                         });
                     } else {
-                        Swal.fire({
+                        Toast.fire({
                             icon: 'error',
-                            title: 'Gagal',
-                            text: res.message,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000
+                            title: res.message
                         });
                     }
                 }).fail(function() {
-                    Swal.fire({
+                    Toast.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: 'Terjadi kesalahan pada server.',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000
+                        title: 'Terjadi kesalahan pada server.'
                     });
                 });
             });
 
-            @if (session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: "{{ session('success') }}",
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            @endif
-
-            @if (session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: "{{ session('error') }}",
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            @endif
         });
+
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: "Apakah Anda yakin ingin menghapus kantor ini? Tindakan ini tidak dapat dibatalkan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+            })
+        }
     </script>
 </body>
 

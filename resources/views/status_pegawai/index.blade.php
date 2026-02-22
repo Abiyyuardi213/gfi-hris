@@ -112,11 +112,17 @@
                                                         class="btn btn-info btn-sm">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <button class="btn btn-danger btn-sm delete-btn"
-                                                        data-id="{{ $status->id }}" data-toggle="modal"
-                                                        data-target="#deleteModal">
+                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                        onclick="confirmDelete('{{ $status->id }}')" title="Hapus">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    <form id="delete-form-{{ $status->id }}"
+                                                        action="{{ route('status-pegawai.destroy', $status->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -133,37 +139,9 @@
         @include('include.footerSistem')
     </div>
 
-    <!-- Modal Delete -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-exclamation-triangle"></i> Konfirmasi Hapus
-                    </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <form id="deleteForm" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-body">
-                        Apakah Anda yakin ingin menghapus status pegawai ini?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Hapus
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    @include('services.ToastModal')
-    @include('services.LogoutModal')
+
+
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -172,6 +150,9 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
 
+    @include('services.ToastModal')
+    @include('services.LogoutModal')
+
     <script>
         $(function() {
             $('#statusTable').DataTable({
@@ -179,13 +160,6 @@
                 searching: true,
                 ordering: true,
                 responsive: true
-            });
-
-            $('.delete-btn').click(function() {
-                let id = $(this).data('id');
-                let url = "{{ route('status-pegawai.destroy', ':id') }}";
-                url = url.replace(':id', id);
-                $('#deleteForm').attr('action', url);
             });
 
             $('.toggle-status').change(function() {
@@ -198,14 +172,6 @@
                 $.post(url, {
                     _token: '{{ csrf_token() }}'
                 }, function(res) {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-
                     if (res.success) {
                         Toast.fire({
                             icon: 'success',
@@ -219,13 +185,6 @@
                         checkbox.prop('checked', !isChecked);
                     }
                 }).fail(function() {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
                     Toast.fire({
                         icon: 'error',
                         title: 'Terjadi kesalahan sistem.'
@@ -234,6 +193,23 @@
                 });
             });
         });
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: "Apakah Anda yakin ingin menghapus status pegawai ini? Tindakan ini tidak dapat dibatalkan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+            })
+        }
     </script>
 
 </body>

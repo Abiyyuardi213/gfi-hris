@@ -172,6 +172,8 @@
     @include('services.ToastModal')
     @include('services.LogoutModal')
 
+
+
     <script>
         $(function() {
             $("#userTable").DataTable({
@@ -195,26 +197,21 @@
                 _token: '{{ csrf_token() }}'
             }, function(res) {
                 if (res.success) {
-                    // Use SweetAlert Toast
-                    Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.addEventListener('mouseenter', Swal.stopTimer)
-                            toast.addEventListener('mouseleave', Swal.resumeTimer)
-                        }
-                    }).fire({
+                    Toast.fire({
                         icon: 'success',
                         title: res.message
                     });
                 } else {
-                    Swal.fire('Gagal', 'Gagal mengubah status user.', 'error');
+                    Toast.fire({
+                        icon: 'error',
+                        title: res.message
+                    });
                 }
             }).fail(function() {
-                Swal.fire('Error', 'Terjadi kesalahan.', 'error');
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Terjadi kesalahan pada server.'
+                });
             });
         });
     </script>
