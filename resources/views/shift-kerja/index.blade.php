@@ -49,7 +49,13 @@
             transform: translateX(26px);
             color: #28a745;
         }
+
+        .highlight-row {
+            background-color: rgba(40, 167, 69, 0.2) !important;
+            transition: background-color 2s ease;
+        }
     </style>
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -93,7 +99,8 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($shifts as $index => $shift)
-                                            <tr>
+                                            <tr id="row-{{ $shift->id }}">
+
                                                 <td>{{ $index + 1 }}</td>
                                                 <td><strong>{{ $shift->kode_shift }}</strong></td>
                                                 <td>{{ $shift->nama_shift }}</td>
@@ -109,11 +116,17 @@
                                                         class="btn btn-info btn-sm">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <button class="btn btn-danger btn-sm delete-btn"
-                                                        data-id="{{ $shift->id }}" data-toggle="modal"
-                                                        data-target="#deleteModal">
+                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                        onclick="confirmDelete('{{ $shift->id }}')" title="Hapus">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    <form id="delete-form-{{ $shift->id }}"
+                                                        action="{{ route('shift-kerja.destroy', $shift->id) }}"
+                                                        method="POST" style="display: none;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -130,35 +143,7 @@
         @include('include.footerSistem')
     </div>
 
-    <!-- Modal Hapus -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-exclamation-triangle"></i> Konfirmasi Hapus
-                    </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus data shift ini?
-                </div>
-                <form id="deleteForm" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Hapus
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    @include('services.ToastModal')
-    @include('services.LogoutModal')
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -166,21 +151,45 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
 
+    @include('services.ToastModal')
+    @include('services.LogoutModal')
     <script>
         $(function() {
-            $('#shiftTable').DataTable({
+            var table = $('#shiftTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
-                responsive: true
+                responsive: true,
+                stateSave: true
             });
 
-            $('.delete-btn').click(function() {
-                let id = $(this).data('id');
-                let url = "{{ route('shift-kerja.destroy', ':id') }}";
-                url = url.replace(':id', id);
-                $('#deleteForm').attr('action', url);
-            });
+            // Logika untuk highlight dan focus ke data baru/update
+            @if (session('target_id'))
+                var targetId = "{{ session('target_id') }}";
+                var row = table.row('#row-' + targetId);
+
+                if (row.length) {
+                    var rowIdx = row.index();
+                    var pageLen = table.page.len();
+                    var pageIdx = Math.floor(rowIdx / pageLen);
+
+                    table.page(pageIdx).draw(false);
+
+                    var $rowElement = $('#row-' + targetId);
+                    $rowElement.addClass('highlight-row');
+
+                    $('html, body').animate({
+                        scrollTop: $rowElement.offset().top - 100
+                    }, 500);
+
+                    setTimeout(function() {
+                        $rowElement.removeClass('highlight-row');
+                    }, 3000);
+                }
+            @endif
+
+
+
 
             $('.toggle-status').change(function() {
                 let id = $(this).data('id');
@@ -192,14 +201,6 @@
                 $.post(url, {
                     _token: "{{ csrf_token() }}"
                 }, function(res) {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-
                     if (res.success) {
                         Toast.fire({
                             icon: 'success',
@@ -213,13 +214,6 @@
                         checkbox.prop('checked', !isChecked);
                     }
                 }).fail(function() {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
                     Toast.fire({
                         icon: 'error',
                         title: 'Terjadi kesalahan sistem.'
@@ -228,6 +222,23 @@
                 });
             });
         });
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: "Apakah Anda yakin ingin menghapus data shift ini? Tindakan ini tidak dapat dibatalkan.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+            })
+        }
     </script>
 
 </body>

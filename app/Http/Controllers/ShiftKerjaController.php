@@ -21,18 +21,18 @@ class ShiftKerjaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_shift' => 'required|string|unique:shift_kerja,kode_shift',
             'nama_shift' => 'required|string|max:255',
             'jam_masuk'  => 'required',
             'jam_keluar' => 'required',
             'status'     => 'required|boolean',
         ]);
 
-        ShiftKerja::createShift($request->all());
+        $shift = ShiftKerja::createShift($request->all());
 
         return redirect()
             ->route('shift-kerja.index')
-            ->with('success', 'Shift Kerja berhasil ditambahkan.');
+            ->with('success', 'Shift Kerja berhasil ditambahkan.')
+            ->with('target_id', $shift->id);
     }
 
     public function edit($id)
@@ -46,7 +46,6 @@ class ShiftKerjaController extends Controller
         $shift = ShiftKerja::findOrFail($id);
 
         $request->validate([
-            'kode_shift' => 'required|string|unique:shift_kerja,kode_shift,' . $shift->id,
             'nama_shift' => 'required|string|max:255',
             'jam_masuk'  => 'required',
             'jam_keluar' => 'required',
@@ -57,7 +56,8 @@ class ShiftKerjaController extends Controller
 
         return redirect()
             ->route('shift-kerja.index')
-            ->with('success', 'Shift Kerja berhasil diperbarui.');
+            ->with('success', 'Shift Kerja berhasil diperbarui.')
+            ->with('target_id', $shift->id);
     }
 
     public function destroy($id)

@@ -46,12 +46,9 @@
                                         {{-- Kode Shift --}}
                                         <div class="form-group">
                                             <label for="kode_shift">Kode Shift</label>
-                                            <input type="text" name="kode_shift"
-                                                class="form-control @error('kode_shift') is-invalid @enderror"
-                                                value="{{ old('kode_shift', $shift->kode_shift) }}" required>
-                                            @error('kode_shift')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                                            <input type="text" name="kode_shift" class="form-control"
+                                                value="{{ $shift->kode_shift }}" readonly>
+                                            <small class="text-muted">Kode shift tidak dapat diubah.</small>
                                         </div>
 
                                         {{-- Nama Shift --}}
@@ -130,12 +127,13 @@
         @include('include.footerSistem')
     </div>
 
-    @include('services.ToastModal')
-    @include('services.LogoutModal')
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+    @include('services.ToastModal')
+    @include('services.LogoutModal')
+
 </body>
 
 </html>

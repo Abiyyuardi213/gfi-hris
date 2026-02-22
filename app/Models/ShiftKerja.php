@@ -35,13 +35,16 @@ class ShiftKerja extends Model
             if (!$model->id) {
                 $model->id = (string) Str::uuid();
             }
+            if (!$model->kode_shift) {
+                $model->kode_shift = self::generateKodeShift();
+            }
         });
     }
 
     public static function createShift($data)
     {
         return self::create([
-            'kode_shift' => $data['kode_shift'],
+            'kode_shift' => self::generateKodeShift(),
             'nama_shift' => $data['nama_shift'],
             'jam_masuk'  => $data['jam_masuk'],
             'jam_keluar' => $data['jam_keluar'],
@@ -49,10 +52,25 @@ class ShiftKerja extends Model
         ]);
     }
 
+    protected static function generateKodeShift(): string
+    {
+        $lastKode = self::withTrashed()
+            ->where('kode_shift', 'LIKE', 'SHF%')
+            ->orderBy('created_at', 'desc')
+            ->value('kode_shift');
+
+        $lastNumber = $lastKode
+            ? intval(substr($lastKode, 3, 3))
+            : 0;
+
+        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
+
+        return "SHF{$newNumber}";
+    }
+
     public function updateShift($data)
     {
         return $this->update([
-            'kode_shift' => $data['kode_shift'],
             'nama_shift' => $data['nama_shift'],
             'jam_masuk'  => $data['jam_masuk'],
             'jam_keluar' => $data['jam_keluar'],
