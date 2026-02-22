@@ -49,7 +49,13 @@
             transform: translateX(26px);
             color: #28a745;
         }
+
+        .highlight-row {
+            background-color: rgba(40, 167, 69, 0.2) !important;
+            transition: background-color 2s ease;
+        }
     </style>
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -93,7 +99,8 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($jabatans as $index => $jabatan)
-                                            <tr>
+                                            <tr id="row-{{ $jabatan->id }}">
+
                                                 <td>{{ $index + 1 }}</td>
                                                 <td><strong>{{ $jabatan->kode_jabatan }}</strong></td>
                                                 <td>{{ $jabatan->nama_jabatan }}</td>
@@ -155,12 +162,45 @@
 
     <script>
         $(function() {
-            $('#jabatanTable').DataTable({
+            var table = $('#jabatanTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
-                responsive: true
+                responsive: true,
+                stateSave: true // Menjaga pagination tetap di halaman yang sama
             });
+
+            // Logika untuk highlight dan focus ke data baru/update
+            @if (session('target_id'))
+                var targetId = "{{ session('target_id') }}";
+                var row = table.row('#row-' + targetId);
+
+                if (row.length) {
+                    // Cari index baris di dalam urutan data DataTable saat ini
+                    var rowIdx = row.index();
+                    // Hitung halaman tempat baris tersebut berada
+                    var pageLen = table.page.len();
+                    var pageIdx = Math.floor(rowIdx / pageLen);
+
+                    // Pindah ke halaman tersebut
+                    table.page(pageIdx).draw(false);
+
+                    // Highlight baris
+                    var $rowElement = $('#row-' + targetId);
+                    $rowElement.addClass('highlight-row');
+
+                    // Scroll ke baris tersebut
+                    $('html, body').animate({
+                        scrollTop: $rowElement.offset().top - 100
+                    }, 500);
+
+                    // Hilangkan highlight setelah beberapa detik
+                    setTimeout(function() {
+                        $rowElement.removeClass('highlight-row');
+                    }, 3000);
+                }
+            @endif
+
 
             $('.toggle-status').change(function() {
                 let id = $(this).data('id');

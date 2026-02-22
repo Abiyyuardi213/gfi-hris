@@ -35,11 +35,12 @@ class JabatanController extends Controller
             'status'       => 'required|boolean',
         ]);
 
-        Jabatan::createJabatan($request->all());
+        $jabatan = Jabatan::createJabatan($request->all());
 
         return redirect()
             ->route('jabatan.index')
-            ->with('success', 'Jabatan berhasil ditambahkan.');
+            ->with('success', 'Jabatan berhasil ditambahkan.')
+            ->with('target_id', $jabatan->id);
     }
 
     public function show($id)
@@ -77,7 +78,8 @@ class JabatanController extends Controller
 
         return redirect()
             ->route('jabatan.index')
-            ->with('success', 'Jabatan berhasil diperbarui.');
+            ->with('success', 'Jabatan berhasil diperbarui.')
+            ->with('target_id', $jabatan->id);
     }
 
     public function destroy($id)
